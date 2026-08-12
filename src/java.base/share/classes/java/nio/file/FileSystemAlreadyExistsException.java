@@ -25,6 +25,10 @@
 
 package java.nio.file;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Runtime exception thrown when an attempt is made to create a file system that
  * already exists.
@@ -32,6 +36,7 @@ package java.nio.file;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public class FileSystemAlreadyExistsException
     extends RuntimeException
 {
@@ -41,6 +46,7 @@ public class FileSystemAlreadyExistsException
     /**
      * Constructs an instance of this class.
      */
+    @SideEffectFree
     public FileSystemAlreadyExistsException() {
     }
 
@@ -50,7 +56,8 @@ public class FileSystemAlreadyExistsException
      * @param   msg
      *          the detail message
      */
-    public FileSystemAlreadyExistsException(String msg) {
+    @SideEffectFree
+    public FileSystemAlreadyExistsException(@Nullable String msg) {
         super(msg);
     }
 }

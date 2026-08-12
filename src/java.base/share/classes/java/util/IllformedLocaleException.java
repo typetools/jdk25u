@@ -32,6 +32,9 @@
 
 package java.util;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Thrown by methods in {@link Locale} and {@link Locale.Builder} to
  * indicate that an argument is not a well-formed BCP 47 tag.
@@ -39,6 +42,7 @@ package java.util;
  * @see Locale
  * @since 1.7
  */
+@AnnotatedFor({"index"})
 public class IllformedLocaleException extends RuntimeException {
 
     @java.io.Serial
@@ -51,6 +55,7 @@ public class IllformedLocaleException extends RuntimeException {
      * Constructs a new {@code IllformedLocaleException} with no
      * detail message and -1 as the error index.
      */
+    @SideEffectFree
     public IllformedLocaleException() {
         super();
     }
@@ -61,6 +66,7 @@ public class IllformedLocaleException extends RuntimeException {
      *
      * @param message the message
      */
+    @SideEffectFree
     public IllformedLocaleException(String message) {
         super(message);
     }
@@ -75,6 +81,7 @@ public class IllformedLocaleException extends RuntimeException {
      * @param message the message
      * @param errorIndex the index
      */
+    @SideEffectFree
     public IllformedLocaleException(String message, int errorIndex) {
         super(message + ((errorIndex < 0) ? "" : " [at index " + errorIndex + "]"));
         _errIdx = errorIndex;

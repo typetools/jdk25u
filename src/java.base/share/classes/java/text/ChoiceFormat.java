@@ -38,6 +38,12 @@
 
 package java.text;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.InvalidObjectException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -712,6 +718,8 @@ public class ChoiceFormat extends NumberFormat {
      * {@return a string identifying this {@code ChoiceFormat}, for debugging}
      */
     @Override
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     public String toString() {
         return
             """
@@ -733,7 +741,7 @@ public class ChoiceFormat extends NumberFormat {
      * @see Object#equals(Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj)                      // quick check
             return true;
         if (obj == null || getClass() != obj.getClass())

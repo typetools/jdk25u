@@ -29,6 +29,12 @@ import java.lang.classfile.constantpool.ClassEntry;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 public final class InterfacesImpl
         extends AbstractElement
         implements Interfaces {

@@ -25,12 +25,17 @@
 
 package java.nio.file;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Runtime exception thrown when a provider of the required type cannot be found.
  *
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public class ProviderNotFoundException
     extends RuntimeException
 {
@@ -40,6 +45,7 @@ public class ProviderNotFoundException
     /**
      * Constructs an instance of this class.
      */
+    @SideEffectFree
     public ProviderNotFoundException() {
     }
 
@@ -49,7 +55,8 @@ public class ProviderNotFoundException
      * @param   msg
      *          the detail message
      */
-    public ProviderNotFoundException(String msg) {
+    @SideEffectFree
+    public ProviderNotFoundException(@Nullable String msg) {
         super(msg);
     }
 }

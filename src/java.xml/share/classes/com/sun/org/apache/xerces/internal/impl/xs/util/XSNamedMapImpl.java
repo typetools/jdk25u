@@ -20,6 +20,7 @@
 
 package com.sun.org.apache.xerces.internal.impl.xs.util;
 
+import org.checkerframework.dataflow.qual.Pure;
 import com.sun.org.apache.xerces.internal.util.SymbolHash;
 import com.sun.org.apache.xerces.internal.xs.XSNamedMap;
 import com.sun.org.apache.xerces.internal.xs.XSObject;
@@ -200,6 +201,7 @@ public class XSNamedMapImpl extends AbstractMap<QName, XSObject> implements XSNa
      * java.util.Map methods
      */
 
+    @Pure
     public boolean containsKey(Object key) {
         return (get(key) != null);
     }
@@ -235,6 +237,7 @@ public class XSNamedMapImpl extends AbstractMap<QName, XSObject> implements XSNa
                 public Iterator<Map.Entry<QName,XSObject>> iterator() {
                     return new Iterator<Map.Entry<QName,XSObject>>() {
                         private int index = 0;
+                        @Pure
                         public boolean hasNext() {
                             return (index < length);
                         }

@@ -24,6 +24,8 @@
  */
 package javax.xml.catalog;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -338,6 +340,7 @@ class CatalogImpl extends GroupEntry implements Catalog {
             int nextCatalogIndex = 0;
 
             @Override
+            @Pure
             public boolean hasNext() {
                 if (nextCatalog != null) {
                     return true;

@@ -25,6 +25,9 @@
 
 package java.nio.file;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Unchecked exception thrown when path string cannot be converted into a
  * {@link Path} because the path string contains invalid characters, or
@@ -33,6 +36,7 @@ package java.nio.file;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public class InvalidPathException
     extends IllegalArgumentException
 {
@@ -65,6 +69,7 @@ public class InvalidPathException
      * @throws  IllegalArgumentException
      *          if the error index is less than {@code -1}
      */
+    @SideEffectFree
     public InvalidPathException(String input, String reason, int index) {
         super(reason);
         if ((input == null) || (reason == null))
@@ -85,6 +90,7 @@ public class InvalidPathException
      * @throws  NullPointerException
      *          if either the input or reason strings are {@code null}
      */
+    @SideEffectFree
     public InvalidPathException(String input, String reason) {
         this(input, reason, -1);
     }

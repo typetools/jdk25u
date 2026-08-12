@@ -25,6 +25,8 @@
  */
 package com.sun.org.apache.xml.internal.security.signature.reference;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -81,6 +83,7 @@ public class ReferenceSubTreeData implements ReferenceNodeSetData {
         }
 
         @Override
+        @Pure
         public boolean hasNext() {
             if (nodeSet == null) {
                 nodeSet = dereferenceSameDocumentURI(root);

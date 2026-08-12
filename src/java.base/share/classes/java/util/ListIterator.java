@@ -25,6 +25,18 @@
 
 package java.util;
 
+import org.checkerframework.checker.index.qual.GTENegativeOne;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.CFComment;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+
 /**
  * An iterator for lists that allows the programmer
  * to traverse the list in either direction, modify
@@ -59,6 +71,7 @@ package java.util;
  * @see List#listIterator()
  * @since   1.2
  */
+@AnnotatedFor({"lock", "nullness", "index"})
 public interface ListIterator<E> extends Iterator<E> {
     // Query Operations
 
@@ -71,6 +84,8 @@ public interface ListIterator<E> extends Iterator<E> {
      * @return {@code true} if the list iterator has more elements when
      *         traversing the list in the forward direction
      */
+    @CFComment({"@Pure is not necessary here, because it's inherited from Iterator"})
+    @EnsuresNonEmptyIf(result = true, expression = "this")
     boolean hasNext();
 
     /**
@@ -83,7 +98,9 @@ public interface ListIterator<E> extends Iterator<E> {
      * @return the next element in the list
      * @throws NoSuchElementException if the iteration has no next element
      */
-    E next();
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    E next(@GuardSatisfied @NonEmpty ListIterator<E> this);
 
     /**
      * Returns {@code true} if this list iterator has more elements when
@@ -94,6 +111,7 @@ public interface ListIterator<E> extends Iterator<E> {
      * @return {@code true} if the list iterator has more elements when
      *         traversing the list in the reverse direction
      */
+    @Pure
     boolean hasPrevious();
 
     /**
@@ -108,7 +126,9 @@ public interface ListIterator<E> extends Iterator<E> {
      * @throws NoSuchElementException if the iteration has no previous
      *         element
      */
-    E previous();
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    E previous(@GuardSatisfied ListIterator<E> this);
 
     /**
      * Returns the index of the element that would be returned by a
@@ -119,7 +139,8 @@ public interface ListIterator<E> extends Iterator<E> {
      *         subsequent call to {@code next}, or list size if the list
      *         iterator is at the end of the list
      */
-    int nextIndex();
+    @Pure
+    @NonNegative int nextIndex();
 
     /**
      * Returns the index of the element that would be returned by a
@@ -130,7 +151,8 @@ public interface ListIterator<E> extends Iterator<E> {
      *         subsequent call to {@code previous}, or -1 if the list
      *         iterator is at the beginning of the list
      */
-    int previousIndex();
+    @Pure
+    @GTENegativeOne int previousIndex();
 
 
     // Modification Operations
@@ -149,7 +171,9 @@ public interface ListIterator<E> extends Iterator<E> {
      *         {@code add} have been called after the last call to
      *         {@code next} or {@code previous}
      */
-    void remove();
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    void remove(@GuardSatisfied ListIterator<E> this);
 
     /**
      * Replaces the last element returned by {@link #next} or
@@ -171,7 +195,9 @@ public interface ListIterator<E> extends Iterator<E> {
      *         {@code add} have been called after the last call to
      *         {@code next} or {@code previous}
      */
-    void set(E e);
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    void set(@GuardSatisfied ListIterator<E> this, E e);
 
     /**
      * Inserts the specified element into the list (optional operation).
@@ -193,5 +219,8 @@ public interface ListIterator<E> extends Iterator<E> {
      * @throws IllegalArgumentException if some aspect of this element
      *         prevents it from being added to this list
      */
-    void add(E e);
+    @CFComment("Not @EnsuresNonEmpty(this) because this adds *before* the cursor.")
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    void add(@GuardSatisfied ListIterator<E> this, E e);
 }

@@ -25,6 +25,10 @@
 
 package java.io;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Signals that an end of file or end of stream has been reached
  * unexpectedly during input.
@@ -38,6 +42,7 @@ package java.io;
  * @see     java.io.IOException
  * @since   1.0
  */
+@AnnotatedFor({"nullness"})
 public class EOFException extends IOException {
     @java.io.Serial
     private static final long serialVersionUID = 6433858223774886977L;
@@ -46,6 +51,7 @@ public class EOFException extends IOException {
      * Constructs an {@code EOFException} with {@code null}
      * as its error detail message.
      */
+    @SideEffectFree
     public EOFException() {
         super();
     }
@@ -58,7 +64,8 @@ public class EOFException extends IOException {
      *
      * @param   s   the detail message.
      */
-    public EOFException(String s) {
+    @SideEffectFree
+    public EOFException(@Nullable String s) {
         super(s);
     }
 }

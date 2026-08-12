@@ -25,11 +25,16 @@
 
 package java.io;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Superclass of all exceptions specific to Object Stream classes.
  *
  * @since   1.1
  */
+@AnnotatedFor({"nullness"})
 public abstract class ObjectStreamException extends IOException {
 
     @java.io.Serial
@@ -40,7 +45,8 @@ public abstract class ObjectStreamException extends IOException {
      *
      * @param message the detailed message for the exception
      */
-    protected ObjectStreamException(String message) {
+    @SideEffectFree
+    protected ObjectStreamException(@Nullable String message) {
         super(message);
     }
 
@@ -52,6 +58,7 @@ public abstract class ObjectStreamException extends IOException {
      * @param cause the cause
      * @since 19
      */
+    @SideEffectFree
     protected ObjectStreamException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -59,6 +66,7 @@ public abstract class ObjectStreamException extends IOException {
     /**
      * Create an ObjectStreamException.
      */
+    @SideEffectFree
     protected ObjectStreamException() {
         super();
     }
@@ -69,6 +77,7 @@ public abstract class ObjectStreamException extends IOException {
      * @param cause the cause
      * @since 19
      */
+    @SideEffectFree
     protected ObjectStreamException(Throwable cause) {
         super(cause);
     }

@@ -25,6 +25,18 @@
 
 package java.net;
 
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -214,6 +226,7 @@ import static jdk.internal.util.Exceptions.formatMsg;
  * @author  James Gosling
  * @since 1.0
  */
+@AnnotatedFor("nullness")
 public final class URL implements java.io.Serializable {
 
     static final String BUILTIN_HANDLERS_PREFIX = "sun.net.www.protocol";
@@ -290,7 +303,7 @@ public final class URL implements java.io.Serializable {
      * The host's IP address, used in equals and hashCode.
      * Computed on demand. An uninitialized or unknown hostAddress is null.
      */
-    private transient InetAddress hostAddress;
+    private transient @Nullable InetAddress hostAddress;
 
     /**
      * The URLStreamHandler for this URL.
@@ -408,7 +421,7 @@ public final class URL implements java.io.Serializable {
      * details.
      */
     @Deprecated(since = "20")
-    public URL(String protocol, String host, int port, String file)
+    public URL(String protocol, @Nullable String host, int port, String file)
         throws MalformedURLException
     {
         this(protocol, host, port, file, null);
@@ -438,7 +451,7 @@ public final class URL implements java.io.Serializable {
      * details.
      */
     @Deprecated(since = "20")
-    public URL(String protocol, String host, String file)
+    public URL(String protocol, @Nullable String host, String file)
             throws MalformedURLException {
         this(protocol, host, -1, file);
     }
@@ -479,8 +492,8 @@ public final class URL implements java.io.Serializable {
      * for more details.
      */
     @Deprecated(since = "20")
-    public URL(String protocol, String host, int port, String file,
-               URLStreamHandler handler) throws MalformedURLException {
+    public URL(String protocol, @Nullable String host, int port, String file,
+               @Nullable URLStreamHandler handler) throws MalformedURLException {
 
         protocol = lowerCaseProtocol(protocol);
         this.protocol = protocol;
@@ -626,7 +639,7 @@ public final class URL implements java.io.Serializable {
      * details.
      */
     @Deprecated(since = "20")
-    public URL(URL context, String spec) throws MalformedURLException {
+    public URL(@Nullable URL context, String spec) throws MalformedURLException {
         this(context, spec, null);
     }
 
@@ -661,7 +674,7 @@ public final class URL implements java.io.Serializable {
      * for more details.
      */
     @Deprecated(since = "20")
-    public URL(URL context, String spec, URLStreamHandler handler)
+    public URL(@Nullable URL context, String spec, @Nullable URLStreamHandler handler)
         throws MalformedURLException
     {
         String original = spec;
@@ -1087,7 +1100,9 @@ public final class URL implements java.io.Serializable {
      * @return  {@code true} if the objects are the same;
      *          {@code false} otherwise.
      */
-    public boolean equals(Object obj) {
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
+    public boolean equals(@Nullable Object obj) {
         if (!(obj instanceof URL u2))
             return false;
 
@@ -1291,7 +1306,7 @@ public final class URL implements java.io.Serializable {
      * @see        java.net.URLConnection#getContent(Class[])
      * @since 1.3
      */
-    public final Object getContent(Class<?>[] classes)
+    public final @Nullable Object getContent(Class<?>[] classes)
     throws java.io.IOException {
         return openConnection().getContent(classes);
     }
@@ -1299,7 +1314,7 @@ public final class URL implements java.io.Serializable {
     /**
      * The URLStreamHandler factory.
      */
-    private static volatile URLStreamHandlerFactory factory;
+    private static volatile @MonotonicNonNull URLStreamHandlerFactory factory;
 
     /**
      * Sets an application's {@code URLStreamHandlerFactory}.

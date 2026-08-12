@@ -25,6 +25,8 @@
 
 package javax.xml.stream;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import javax.xml.stream.events.XMLEvent;
 
 import java.util.Iterator;
@@ -59,6 +61,7 @@ public interface XMLEventReader extends Iterator<Object> {
    * @return true if the event reader has more events, false otherwise
    */
   @Override
+  @Pure
   public boolean hasNext();
 
   /**

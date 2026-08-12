@@ -26,11 +26,16 @@ package java.io;
 
 import java.util.Objects;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Wraps an {@link IOException} with an unchecked exception.
  *
  * @since   1.8
  */
+@AnnotatedFor({"nullness"})
 public class UncheckedIOException extends RuntimeException {
     @java.io.Serial
     private static final long serialVersionUID = -8134305061645241065L;
@@ -46,7 +51,8 @@ public class UncheckedIOException extends RuntimeException {
      * @throws  NullPointerException
      *          if the cause is {@code null}
      */
-    public UncheckedIOException(String message, IOException cause) {
+    @SideEffectFree
+    public UncheckedIOException(@Nullable String message, IOException cause) {
         super(message, Objects.requireNonNull(cause));
     }
 
@@ -59,6 +65,7 @@ public class UncheckedIOException extends RuntimeException {
      * @throws  NullPointerException
      *          if the cause is {@code null}
      */
+    @SideEffectFree
     public UncheckedIOException(IOException cause) {
         super(Objects.requireNonNull(cause));
     }

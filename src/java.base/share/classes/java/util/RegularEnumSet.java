@@ -25,6 +25,23 @@
 
 package java.util;
 
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.index.qual.PolyGrowShrink;
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nonempty.qual.PolyNonEmpty;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signedness.qual.UnknownSignedness;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+
 /**
  * Private implementation class for EnumSet, for "regular sized" enum types
  * (i.e., those with 64 or fewer enum constants).
@@ -33,6 +50,7 @@ package java.util;
  * @since 1.5
  * @serial exclude
  */
+@AnnotatedFor({"index"})
 final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
     @java.io.Serial
     private static final long serialVersionUID = 3411599620347842686L;
@@ -46,15 +64,21 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
         super(elementType, universe);
     }
 
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     void addRange(E from, E to) {
         elements = (-1L >>>  (from.ordinal() - to.ordinal() - 1)) << from.ordinal();
     }
 
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     void addAll() {
         if (universe.length != 0)
             elements = -1L >>> -universe.length;
     }
 
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     void complement() {
         if (universe.length != 0) {
             elements = ~elements;
@@ -72,7 +96,8 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      *
      * @return an iterator over the elements contained in this set
      */
-    public Iterator<E> iterator() {
+    @SideEffectFree
+    public @PolyGrowShrink @PolyNonEmpty Iterator<E> iterator(@PolyGrowShrink @PolyNonEmpty RegularEnumSet<E> this) {
         return new EnumSetIterator<>();
     }
 
@@ -93,12 +118,16 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
             unseen = elements;
         }
 
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
         public boolean hasNext() {
             return unseen != 0;
         }
 
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         @SuppressWarnings("unchecked")
-        public E next() {
+        public E next(@NonEmpty EnumSetIterator<E> this) {
             if (unseen == 0)
                 throw new NoSuchElementException();
             lastReturned = unseen & -unseen;
@@ -106,6 +135,8 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
             return (E) universe[Long.numberOfTrailingZeros(lastReturned)];
         }
 
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public void remove() {
             if (lastReturned == 0)
                 throw new IllegalStateException();
@@ -119,7 +150,8 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      *
      * @return the number of elements in this set
      */
-    public int size() {
+    @Pure
+    public @NonNegative int size() {
         return Long.bitCount(elements);
     }
 
@@ -128,6 +160,8 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      *
      * @return {@code true} if this set contains no elements
      */
+    @Pure
+    @EnsuresNonEmptyIf(result = false, expression = "this")
     public boolean isEmpty() {
         return elements == 0;
     }
@@ -138,7 +172,9 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      * @param e element to be checked for containment in this collection
      * @return {@code true} if this set contains the specified element
      */
-    public boolean contains(Object e) {
+    @Pure
+    @EnsuresNonEmptyIf(result = true, expression = "this")
+    public boolean contains(@GuardSatisfied @Nullable @UnknownSignedness Object e) {
         if (e == null)
             return false;
         Class<?> eClass = e.getClass();
@@ -158,6 +194,9 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      *
      * @throws NullPointerException if {@code e} is null
      */
+    @EnsuresNonEmpty("this")
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean add(E e) {
         typeCheck(e);
 
@@ -172,7 +211,9 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      * @param e element to be removed from this set, if present
      * @return {@code true} if the set contained the specified element
      */
-    public boolean remove(Object e) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean remove(@GuardSatisfied @Nullable @UnknownSignedness Object e) {
         if (e == null)
             return false;
         Class<?> eClass = e.getClass();
@@ -195,7 +236,8 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      *        in the specified collection
      * @throws NullPointerException if the specified collection is null
      */
-    public boolean containsAll(Collection<?> c) {
+    @Pure
+    public boolean containsAll(Collection<? extends @UnknownSignedness Object> c) {
         if (!(c instanceof RegularEnumSet<?> es))
             return super.containsAll(c);
 
@@ -213,6 +255,8 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      * @throws NullPointerException if the specified collection or any
      *     of its elements are null
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean addAll(Collection<? extends E> c) {
         if (!(c instanceof RegularEnumSet<?> es))
             return super.addAll(c);
@@ -238,7 +282,9 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      * @return {@code true} if this set changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
-    public boolean removeAll(Collection<?> c) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean removeAll(Collection<? extends @UnknownSignedness Object> c) {
         if (!(c instanceof RegularEnumSet<?> es))
             return super.removeAll(c);
 
@@ -258,7 +304,9 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      * @return {@code true} if this set changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
-    public boolean retainAll(Collection<?> c) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean retainAll(Collection<? extends @UnknownSignedness Object> c) {
         if (!(c instanceof RegularEnumSet<?> es))
             return super.retainAll(c);
 
@@ -276,6 +324,8 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
     /**
      * Removes all of the elements from this set.
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public void clear() {
         elements = 0;
     }
@@ -289,7 +339,9 @@ final class RegularEnumSet<E extends Enum<E>> extends EnumSet<E> {
      * @param o object to be compared for equality with this set
      * @return {@code true} if the specified object is equal to this set
      */
-    public boolean equals(Object o) {
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
+    public boolean equals(@Nullable Object o) {
         if (!(o instanceof RegularEnumSet<?> es))
             return super.equals(o);
 

@@ -25,6 +25,10 @@
 
 package java.io;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Signals that an I/O operation has been interrupted. An
  * {@code InterruptedIOException} is thrown to indicate that an
@@ -38,6 +42,7 @@ package java.io;
  * @see     java.lang.Thread#interrupt()
  * @since   1.0
  */
+@AnnotatedFor({"nullness"})
 public class InterruptedIOException extends IOException {
     @java.io.Serial
     private static final long serialVersionUID = 4020568460727500567L;
@@ -46,6 +51,7 @@ public class InterruptedIOException extends IOException {
      * Constructs an {@code InterruptedIOException} with
      * {@code null} as its error detail message.
      */
+    @SideEffectFree
     public InterruptedIOException() {
         super();
     }
@@ -59,7 +65,8 @@ public class InterruptedIOException extends IOException {
      *
      * @param   s   the detail message.
      */
-    public InterruptedIOException(String s) {
+    @SideEffectFree
+    public InterruptedIOException(@Nullable String s) {
         super(s);
     }
 

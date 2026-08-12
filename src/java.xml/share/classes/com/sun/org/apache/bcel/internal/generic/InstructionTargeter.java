@@ -21,6 +21,8 @@
 
 package com.sun.org.apache.bcel.internal.generic;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 /**
  * Denotes that a class targets InstructionHandles within an InstructionList.
  *
@@ -38,6 +40,7 @@ public interface InstructionTargeter {
      * @param instructionHandle the instruction handle to test.
      * @return whether this targeter targets the specified instruction handle.
      */
+    @Pure
     boolean containsTarget(InstructionHandle instructionHandle);
 
     /**

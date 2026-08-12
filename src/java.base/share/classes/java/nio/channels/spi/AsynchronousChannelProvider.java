@@ -25,6 +25,9 @@
 
 package java.nio.channels.spi;
 
+import org.checkerframework.checker.interning.qual.UsesObjectEquals;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.nio.channels.*;
 import java.io.IOException;
 import java.util.Iterator;
@@ -48,7 +51,8 @@ import java.util.concurrent.*;
  * @since 1.7
  */
 
-public abstract class AsynchronousChannelProvider {
+@AnnotatedFor({"interning"})
+public abstract @UsesObjectEquals class AsynchronousChannelProvider {
 
     /**
      * Initializes a new instance of this class.
