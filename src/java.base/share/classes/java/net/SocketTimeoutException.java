@@ -25,6 +25,10 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Signals that a timeout has occurred on a socket read or accept.
  *
@@ -40,12 +44,14 @@ public class SocketTimeoutException extends java.io.InterruptedIOException {
      * message.
      * @param msg the detail message
      */
-    public SocketTimeoutException(String msg) {
+    @SideEffectFree
+    public SocketTimeoutException(@Nullable String msg) {
         super(msg);
     }
 
     /**
      * Construct a new SocketTimeoutException with no detailed message.
      */
+    @SideEffectFree
     public SocketTimeoutException() {}
 }

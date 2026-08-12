@@ -25,6 +25,10 @@
 
 package java.nio.file;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Checked exception thrown when a file system operation fails because a file
  * is not a symbolic link.
@@ -32,6 +36,7 @@ package java.nio.file;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public class NotLinkException
     extends FileSystemException
 {
@@ -44,7 +49,8 @@ public class NotLinkException
      * @param   file
      *          a string identifying the file or {@code null} if not known
      */
-    public NotLinkException(String file) {
+    @SideEffectFree
+    public NotLinkException(@Nullable String file) {
         super(file);
     }
 
@@ -58,7 +64,8 @@ public class NotLinkException
      * @param   reason
      *          a reason message with additional information or {@code null}
      */
-    public NotLinkException(String file, String other, String reason) {
+    @SideEffectFree
+    public NotLinkException(@Nullable String file, @Nullable String other, @Nullable String reason) {
         super(file, other, reason);
     }
 }

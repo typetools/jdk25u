@@ -25,6 +25,9 @@
 
 package java.nio.file;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
 /**
  * Checked exception thrown when a file system operation fails because a
  * directory is not empty.
@@ -32,6 +35,7 @@ package java.nio.file;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public class DirectoryNotEmptyException
     extends FileSystemException
 {
@@ -44,7 +48,8 @@ public class DirectoryNotEmptyException
      * @param   dir
      *          a string identifying the directory or {@code null} if not known
      */
-    public DirectoryNotEmptyException(String dir) {
+    @SideEffectFree
+    public DirectoryNotEmptyException(@Nullable String dir) {
         super(dir);
     }
 }

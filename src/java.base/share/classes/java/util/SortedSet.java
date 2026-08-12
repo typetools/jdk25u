@@ -25,6 +25,17 @@
 
 package java.util;
 
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.CFComment;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 /**
  * A {@link Set} that further provides a <i>total ordering</i> on its elements.
  * The elements are ordered using their {@linkplain Comparable natural
@@ -105,6 +116,8 @@ package java.util;
  * @since 1.2
  */
 
+@CFComment({"lock/nullness: Subclasses of this interface/class may opt to prohibit null elements"})
+@AnnotatedFor({"lock", "nullness"})
 public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
     /**
      * Returns the comparator used to order the elements in this set,
@@ -115,7 +128,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *         or {@code null} if this set uses the natural ordering
      *         of its elements
      */
-    Comparator<? super E> comparator();
+    @Pure
+    @Nullable Comparator<? super E> comparator(@GuardSatisfied SortedSet<E> this);
 
     /**
      * Returns a view of the portion of this set whose elements range
@@ -148,7 +162,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *         has a restricted range, and {@code fromElement} or
      *         {@code toElement} lies outside the bounds of the range
      */
-    SortedSet<E> subSet(E fromElement, E toElement);
+    @SideEffectFree
+    SortedSet<E> subSet(@GuardSatisfied SortedSet<E> this, @GuardSatisfied E fromElement, @GuardSatisfied E toElement);
 
     /**
      * Returns a view of the portion of this set whose elements are
@@ -175,7 +190,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *         restricted range, and {@code toElement} lies outside the
      *         bounds of the range
      */
-    SortedSet<E> headSet(E toElement);
+    @SideEffectFree
+    SortedSet<E> headSet(@GuardSatisfied SortedSet<E> this, E toElement);
 
     /**
      * Returns a view of the portion of this set whose elements are
@@ -202,7 +218,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *         restricted range, and {@code fromElement} lies outside the
      *         bounds of the range
      */
-    SortedSet<E> tailSet(E fromElement);
+    @SideEffectFree
+    SortedSet<E> tailSet(@GuardSatisfied SortedSet<E> this, E fromElement);
 
     /**
      * Returns the first (lowest) element currently in this set.
@@ -210,7 +227,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @return the first (lowest) element currently in this set
      * @throws NoSuchElementException if this set is empty
      */
-    E first();
+    @SideEffectFree
+    E first(@GuardSatisfied @NonEmpty SortedSet<E> this);
 
     /**
      * Returns the last (highest) element currently in this set.
@@ -218,7 +236,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @return the last (highest) element currently in this set
      * @throws NoSuchElementException if this set is empty
      */
-    E last();
+    @SideEffectFree
+    E last(@GuardSatisfied @NonEmpty SortedSet<E> this);
 
     /**
      * Creates a {@code Spliterator} over the elements in this sorted set.
@@ -252,6 +271,7 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @since 1.8
      */
     @Override
+    @SideEffectFree
     default Spliterator<E> spliterator() {
         return new Spliterators.IteratorSpliterator<E>(
                 this, Spliterator.DISTINCT | Spliterator.SORTED | Spliterator.ORDERED) {
@@ -275,6 +295,9 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws UnsupportedOperationException always
      * @since 21
      */
+    @EnsuresNonEmpty("this")
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     default void addFirst(E e) {
         throw new UnsupportedOperationException();
     }
@@ -290,6 +313,9 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws UnsupportedOperationException always
      * @since 21
      */
+    @EnsuresNonEmpty("this")
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     default void addLast(E e) {
         throw new UnsupportedOperationException();
     }
@@ -303,6 +329,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
      */
+    @EnsuresNonEmpty("this")
+    @Pure
     default E getFirst() {
         return this.first();
     }
@@ -316,6 +344,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
      */
+    @EnsuresNonEmpty("this")
+    @Pure
     default E getLast() {
         return this.last();
     }
@@ -332,6 +362,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     default E removeFirst() {
         E e = this.first();
         this.remove(e);
@@ -350,6 +382,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     default E removeLast() {
         E e = this.last();
         this.remove(e);
@@ -372,6 +406,8 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @return a reverse-ordered view of this collection, as a {@code SortedSet}
      * @since 21
      */
+    @SideEffectFree
+    @DoesNotUnrefineReceiver("modifiability")
     default SortedSet<E> reversed() {
         return ReverseOrderSortedSetView.of(this);
     }

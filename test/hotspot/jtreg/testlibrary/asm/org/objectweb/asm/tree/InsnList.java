@@ -59,6 +59,8 @@
 
 package org.objectweb.asm.tree;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import org.objectweb.asm.MethodVisitor;
@@ -139,6 +141,7 @@ public class InsnList implements Iterable<AbstractInsnNode> {
       * @param insnNode an instruction.
       * @return {@literal true} if the given instruction belongs to this list.
       */
+    @Pure
     public boolean contains(final AbstractInsnNode insnNode) {
         AbstractInsnNode currentInsn = firstInsn;
         while (currentInsn != null && currentInsn != insnNode) {
@@ -541,6 +544,7 @@ public class InsnList implements Iterable<AbstractInsnNode> {
         }
 
         @Override
+        @DoesNotUnrefineReceiver("modifiability")
         public Object next() {
             if (nextInsn == null) {
                 throw new NoSuchElementException();
@@ -553,6 +557,7 @@ public class InsnList implements Iterable<AbstractInsnNode> {
         }
 
         @Override
+        @DoesNotUnrefineReceiver("modifiability")
         public void remove() {
             if (remove != null) {
                 if (remove == nextInsn) {
@@ -607,6 +612,7 @@ public class InsnList implements Iterable<AbstractInsnNode> {
         }
 
         @Override
+        @DoesNotUnrefineReceiver("modifiability")
         public void add(final Object o) {
             if (nextInsn != null) {
                 InsnList.this.insertBefore(nextInsn, (AbstractInsnNode) o);
@@ -620,6 +626,7 @@ public class InsnList implements Iterable<AbstractInsnNode> {
         }
 
         @Override
+        @DoesNotUnrefineReceiver("modifiability")
         public void set(final Object o) {
             if (remove != null) {
                 InsnList.this.set(remove, (AbstractInsnNode) o);

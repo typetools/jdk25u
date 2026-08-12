@@ -25,6 +25,8 @@
 
 package jdk.internal.net.http;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -125,6 +127,7 @@ public final class RequestPublishers {
             final ConcurrentLinkedQueue<ByteBuffer> buffers = new ConcurrentLinkedQueue<>();
             final Iterator<byte[]> iterator = content.iterator();
             @Override
+            @Pure
             public boolean hasNext() {
                 return !buffers.isEmpty() || iterator.hasNext();
             }
@@ -365,6 +368,7 @@ public final class RequestPublishers {
         }
 
         @Override
+        @Pure
         public boolean hasNext() {
             stateLock.lock();
             try {

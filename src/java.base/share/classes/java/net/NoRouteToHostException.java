@@ -25,6 +25,10 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Signals that an error occurred while attempting to connect a
  * socket to a remote address and port.  Typically, the remote
@@ -44,12 +48,14 @@ public class NoRouteToHostException extends SocketException {
      * description of this error.
      * @param msg the detail message
      */
-    public NoRouteToHostException(String msg) {
+    @SideEffectFree
+    public NoRouteToHostException(@Nullable String msg) {
         super(msg);
     }
 
     /**
      * Construct a new NoRouteToHostException with no detailed message.
      */
+    @SideEffectFree
     public NoRouteToHostException() {}
 }
