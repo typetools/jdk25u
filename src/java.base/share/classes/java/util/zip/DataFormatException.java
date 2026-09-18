@@ -25,6 +25,9 @@
 
 package java.util.zip;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that a data format error has occurred.
  *
@@ -38,6 +41,7 @@ public class DataFormatException extends Exception {
     /**
      * Constructs a DataFormatException with no detail message.
      */
+    @SideEffectFree
     public DataFormatException() {
         super();
     }
@@ -47,7 +51,8 @@ public class DataFormatException extends Exception {
      * A detail message is a String that describes this particular exception.
      * @param s the String containing a detail message
      */
-    public DataFormatException(String s) {
+    @SideEffectFree
+    public DataFormatException(@Nullable String s) {
         super(s);
     }
 }

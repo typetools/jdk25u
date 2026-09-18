@@ -63,6 +63,10 @@
 
 package java.lang;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+// import org.checkerframework.dataflow.qual.SideEffectsOnly;
+
 import java.util.*;
 
 final class ProcessEnvironment extends HashMap<String,String>
@@ -100,10 +104,12 @@ final class ProcessEnvironment extends HashMap<String,String>
         return super.get(nonNullString(key));
     }
 
+    @Pure
     public boolean containsKey(Object key) {
         return super.containsKey(nonNullString(key));
     }
 
+    @Pure
     public boolean containsValue(Object value) {
         return super.containsValue(nonNullString(value));
     }
@@ -123,7 +129,7 @@ final class ProcessEnvironment extends HashMap<String,String>
             return e.setValue(validateValue(value));
         }
         public String toString() { return getKey() + "=" + getValue();}
-        public boolean equals(Object o) {return e.equals(o);}
+        public boolean equals(@Nullable Object o) {return e.equals(o);}
         public int hashCode()    {return e.hashCode();}
     }
 
@@ -138,7 +144,9 @@ final class ProcessEnvironment extends HashMap<String,String>
         public Iterator<Map.Entry<String,String>> iterator() {
             return new Iterator<Map.Entry<String,String>>() {
                 Iterator<Map.Entry<String,String>> i = s.iterator();
+                @Pure
                 public boolean hasNext() { return i.hasNext();}
+                // @SideEffectsOnly("this")
                 public Map.Entry<String,String> next() {
                     return new CheckedEntry(i.next());
                 }
@@ -152,6 +160,7 @@ final class ProcessEnvironment extends HashMap<String,String>
             nonNullString(e.getValue());
             return e;
         }
+        @Pure
         public boolean contains(Object o) {return s.contains(checkedEntry(o));}
         public boolean remove(Object o)   {return s.remove(checkedEntry(o));}
     }
@@ -163,6 +172,7 @@ final class ProcessEnvironment extends HashMap<String,String>
         public boolean isEmpty()           {return c.isEmpty();}
         public void clear()                {       c.clear();}
         public Iterator<String> iterator() {return c.iterator();}
+        @Pure
         public boolean contains(Object o)  {return c.contains(nonNullString(o));}
         public boolean remove(Object o)    {return c.remove(nonNullString(o));}
     }
@@ -174,6 +184,7 @@ final class ProcessEnvironment extends HashMap<String,String>
         public boolean isEmpty()           {return s.isEmpty();}
         public void clear()                {       s.clear();}
         public Iterator<String> iterator() {return s.iterator();}
+        @Pure
         public boolean contains(Object o)  {return s.contains(nonNullString(o));}
         public boolean remove(Object o)    {return s.remove(nonNullString(o));}
     }

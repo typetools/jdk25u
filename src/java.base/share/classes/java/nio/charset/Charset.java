@@ -25,6 +25,13 @@
 
 package java.nio.charset;
 
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import jdk.internal.misc.ThreadTracker;
 import jdk.internal.misc.VM;
 import jdk.internal.util.StaticProperty;
@@ -362,11 +369,15 @@ public abstract class Charset
                     return true;
                 }
 
+                @Pure
+                @EnsuresNonEmptyIf(result = true, expression = "this")
                 public boolean hasNext() {
                     return getNext();
                 }
 
-                public CharsetProvider next() {
+                @SideEffectsOnly("this")
+                @DoesNotUnrefineReceiver("modifiability")
+                public CharsetProvider next(/*@NonEmpty Iterator<CharsetProvider> this*/) {
                     if (!getNext())
                         throw new NoSuchElementException();
                     CharsetProvider n = next;
@@ -787,6 +798,7 @@ public abstract class Charset
      *
      * @return  {@code true} if the given charset is contained in this charset
      */
+    @Pure
     public abstract boolean contains(Charset cs);
 
     /**
@@ -950,7 +962,7 @@ public abstract class Charset
      *          given object
      */
     @Override
-    public final boolean equals(Object ob) {
+    public final boolean equals(@Nullable Object ob) {
         if (this == ob)
             return true;
         return ob instanceof Charset other && name.equals(other.name());

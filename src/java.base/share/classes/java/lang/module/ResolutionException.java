@@ -25,6 +25,9 @@
 
 package java.lang.module;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown when resolving a set of modules, or resolving a set of modules with
  * service binding, fails.
@@ -39,6 +42,7 @@ public class ResolutionException extends RuntimeException {
     /**
      * Constructs a {@code ResolutionException} with no detail message.
      */
+    @SideEffectFree
     public ResolutionException() { }
 
     /**
@@ -48,7 +52,8 @@ public class ResolutionException extends RuntimeException {
      * @param msg
      *        The detail message; can be {@code null}
      */
-    public ResolutionException(String msg) {
+    @SideEffectFree
+    public ResolutionException(@Nullable String msg) {
         super(msg);
     }
 
@@ -58,7 +63,8 @@ public class ResolutionException extends RuntimeException {
      * @param cause
      *        The cause; can be {@code null}
      */
-    public ResolutionException(Throwable cause) {
+    @SideEffectFree
+    public ResolutionException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -71,7 +77,8 @@ public class ResolutionException extends RuntimeException {
      * @param cause
      *        The cause; can be {@code null}
      */
-    public ResolutionException(String msg, Throwable cause) {
+    @SideEffectFree
+    public ResolutionException(@Nullable String msg, @Nullable Throwable cause) {
         super(msg, cause);
     }
 

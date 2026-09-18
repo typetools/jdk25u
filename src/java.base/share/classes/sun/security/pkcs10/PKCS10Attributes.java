@@ -25,6 +25,12 @@
 
 package sun.security.pkcs10;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -153,8 +159,10 @@ public class PKCS10Attributes implements DerEncoder {
      * @return true if all the entries match that of the Other,
      * false otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (this == other)
             return true;
         if (!(other instanceof PKCS10Attributes))

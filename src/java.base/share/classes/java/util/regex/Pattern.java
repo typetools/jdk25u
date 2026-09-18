@@ -25,6 +25,21 @@
 
 package java.util.regex;
 
+import org.checkerframework.checker.interning.qual.UsesObjectEquals;
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.regex.qual.PolyRegex;
+import org.checkerframework.checker.regex.qual.Regex;
+import org.checkerframework.checker.signedness.qual.SignedPositive;
+import org.checkerframework.common.value.qual.MinLen;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.CFComment;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.Locale;
@@ -801,7 +816,8 @@ import jdk.internal.util.regex.Grapheme;
  * @since       1.4
  */
 
-public final class Pattern
+@AnnotatedFor({"index", "interning", "lock", "nullness", "regex"})
+public final @UsesObjectEquals class Pattern
     implements java.io.Serializable
 {
 
@@ -823,7 +839,7 @@ public final class Pattern
      * <p> Unix lines mode can also be enabled via the embedded flag
      * expression&nbsp;{@code (?d)}.
      */
-    public static final int UNIX_LINES = 0x01;
+    public static final @SignedPositive int UNIX_LINES = 0x01;
 
     /**
      * Enables case-insensitive matching.
@@ -838,7 +854,7 @@ public final class Pattern
      *
      * <p> Specifying this flag may impose a slight performance penalty.  </p>
      */
-    public static final int CASE_INSENSITIVE = 0x02;
+    public static final @SignedPositive int CASE_INSENSITIVE = 0x02;
 
     /**
      * Permits whitespace and comments in pattern.
@@ -851,7 +867,7 @@ public final class Pattern
      * <p> Comments mode can also be enabled via the embedded flag
      * expression&nbsp;{@code (?x)}.
      */
-    public static final int COMMENTS = 0x04;
+    public static final @SignedPositive int COMMENTS = 0x04;
 
     /**
      * Enables multiline mode.
@@ -864,7 +880,7 @@ public final class Pattern
      * <p> Multiline mode can also be enabled via the embedded flag
      * expression&nbsp;{@code (?m)}.  </p>
      */
-    public static final int MULTILINE = 0x08;
+    public static final @SignedPositive int MULTILINE = 0x08;
 
     /**
      * Enables literal parsing of the pattern.
@@ -881,7 +897,7 @@ public final class Pattern
      * <p> There is no embedded flag character for enabling literal parsing.
      * @since 1.5
      */
-    public static final int LITERAL = 0x10;
+    public static final @SignedPositive int LITERAL = 0x10;
 
     /**
      * Enables dotall mode.
@@ -894,7 +910,7 @@ public final class Pattern
      * expression&nbsp;{@code (?s)}.  (The {@code s} is a mnemonic for
      * "single-line" mode, which is what this is called in Perl.)  </p>
      */
-    public static final int DOTALL = 0x20;
+    public static final @SignedPositive int DOTALL = 0x20;
 
     /**
      * Enables Unicode-aware case folding.
@@ -910,7 +926,7 @@ public final class Pattern
      *
      * <p> Specifying this flag may impose a performance penalty.  </p>
      */
-    public static final int UNICODE_CASE = 0x40;
+    public static final @SignedPositive int UNICODE_CASE = 0x40;
 
     /**
      * Enables canonical equivalence.
@@ -927,7 +943,7 @@ public final class Pattern
      * <p> Specifying this flag may impose a performance penalty
      * and a moderate risk of memory exhaustion.</p>
      */
-    public static final int CANON_EQ = 0x80;
+    public static final @SignedPositive int CANON_EQ = 0x80;
 
     /**
      * Enables the Unicode version of <i>Predefined character classes</i> and
@@ -951,7 +967,7 @@ public final class Pattern
      * @spec https://www.unicode.org/reports/tr18 Unicode Regular Expressions
      * @since 1.7
      */
-    public static final int UNICODE_CHARACTER_CLASS = 0x100;
+    public static final @SignedPositive int UNICODE_CHARACTER_CLASS = 0x100;
 
     /**
      * Contains all possible flags for compile(regex, flags).
@@ -1098,7 +1114,9 @@ public final class Pattern
      * @throws  PatternSyntaxException
      *          If the expression's syntax is invalid
      */
-    public static Pattern compile(String regex) {
+    @CFComment({"lock/nullness: pure wrt equals(@GuardSatisfied Pattern this) but not =="})
+    @Pure
+    public static Pattern compile(@Regex String regex) {
         return new Pattern(regex, 0);
     }
 
@@ -1131,7 +1149,9 @@ public final class Pattern
      * marks for any character is too large, an {@link java.lang.OutOfMemoryError}
      * is thrown.
      */
-    public static Pattern compile(String regex, int flags) {
+    @CFComment({"lock/nullness: pure wrt equals(@GuardSatisfied Pattern this) but not =="})
+    @Pure
+    public static Pattern compile(@Regex String regex, int flags) {
         return new Pattern(regex, flags);
     }
 
@@ -1140,7 +1160,8 @@ public final class Pattern
      *
      * @return  The source of this pattern
      */
-    public String pattern() {
+    @Pure
+    public @Regex String pattern() {
         return pattern;
     }
 
@@ -1152,7 +1173,8 @@ public final class Pattern
      * @return  The string representation of this pattern
      * @since 1.5
      */
-    public String toString() {
+    @Pure
+    public @Regex String toString(@GuardSatisfied Pattern this) {
         return pattern;
     }
 
@@ -1171,7 +1193,8 @@ public final class Pattern
      * {@link java.lang.OutOfMemoryError} is thrown,
      * as in {@link #compile(String, int)}.
      */
-    public Matcher matcher(CharSequence input) {
+    @SideEffectFree
+    public @PolyRegex Matcher matcher(@PolyRegex Pattern this, CharSequence input) {
         if (!compiled) {
             synchronized(this) {
                 if (!compiled)
@@ -1187,6 +1210,7 @@ public final class Pattern
      *
      * @return  The match flags specified when this pattern was compiled
      */
+    @Pure
     public int flags() {
         return flags0;
     }
@@ -1217,7 +1241,8 @@ public final class Pattern
      * @throws  PatternSyntaxException
      *          If the expression's syntax is invalid
      */
-    public static boolean matches(String regex, CharSequence input) {
+    @Pure
+    public static boolean matches(@Regex String regex, CharSequence input) {
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(input);
         return m.matches();
@@ -1302,7 +1327,8 @@ public final class Pattern
      * @return  The array of strings computed by splitting the input
      *          around matches of this pattern
      */
-    public String[] split(CharSequence input, int limit) {
+    @Pure
+    public String @MinLen(1) [] split(CharSequence input, int limit) {
         return split(input, limit, false);
     }
 
@@ -1478,7 +1504,8 @@ public final class Pattern
      * @return  The array of strings computed by splitting the input
      *          around matches of this pattern
      */
-    public String[] split(CharSequence input) {
+    @Pure
+    public String @MinLen(1) [] split(CharSequence input) {
         return split(input, 0, false);
     }
 
@@ -1496,7 +1523,9 @@ public final class Pattern
      * @return  A literal string replacement
      * @since 1.5
      */
-    public static String quote(String s) {
+    @CFComment({"nullness: pure wrt equals() but not =="})
+    @Pure
+    public static @Regex String quote(String s) {
         int slashEIndex = s.indexOf("\\E");
         if (slashEIndex == -1)
             return "\\Q" + s + "\\E";
@@ -2066,6 +2095,7 @@ loop:   for(int x=0, offset=0; x<nCodePoints; x++, offset+=len) {
     /**
      * Peek the next character, and do not advance the cursor.
      */
+    @Pure
     private int peek() {
         int ch = temp[cursor];
         if (has(COMMENTS))
@@ -2114,6 +2144,7 @@ loop:   for(int x=0, offset=0; x<nCodePoints; x++, offset+=len) {
     /**
      * If in xmode peek past whitespace and comments.
      */
+    @Pure
     private int peekPastWhitespace(int ch) {
         while (ASCII.isSpace(ch) || ch == '#') {
             while (ASCII.isSpace(ch))
@@ -2155,6 +2186,7 @@ loop:   for(int x=0, offset=0; x<nCodePoints; x++, offset+=len) {
     /**
      * xmode peek past comment to end of line.
      */
+    @Pure
     private int peekPastLine() {
         int ch = temp[++cursor];
         while (ch != 0 && !isLineSeparator(ch))
@@ -5996,6 +6028,7 @@ NEXT:       while (i <= last) {
      * @since   1.8
      * @see     Matcher#find
      */
+    @SideEffectFree
     public Predicate<String> asPredicate() {
         return s -> matcher(s).find();
     }
@@ -6016,6 +6049,7 @@ NEXT:       while (i <= last) {
      * @since   11
      * @see     Matcher#matches
      */
+    @SideEffectFree
     public Predicate<String> asMatchPredicate() {
         return s -> matcher(s).matches();
     }
@@ -6052,6 +6086,7 @@ NEXT:       while (i <= last) {
      * @see     #split(CharSequence)
      * @since   1.8
      */
+    @SideEffectFree
     public Stream<String> splitAsStream(final CharSequence input) {
         class MatcherIterator implements Iterator<String> {
             private Matcher matcher;
@@ -6063,7 +6098,9 @@ NEXT:       while (i <= last) {
             // > 0 if there are N next empty elements
             private int emptyElementCount;
 
-            public String next() {
+            @SideEffectsOnly("this")
+            @DoesNotUnrefineReceiver("modifiability")
+            public String next(@NonEmpty MatcherIterator this) {
                 if (!hasNext())
                     throw new NoSuchElementException();
 
@@ -6077,6 +6114,8 @@ NEXT:       while (i <= last) {
                 }
             }
 
+            @Pure
+            @EnsuresNonEmptyIf(result = true, expression = "this")
             public boolean hasNext() {
                 if (matcher == null) {
                     matcher = matcher(input);

@@ -25,6 +25,9 @@
 
 package javax.security.auth;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that a {@code refresh} operation failed.
  *
@@ -43,6 +46,7 @@ public class RefreshFailedException extends Exception {
      * Constructs a RefreshFailedException with no detail message. A detail
      * message is a String that describes this particular exception.
      */
+    @SideEffectFree
     public RefreshFailedException() {
         super();
     }
@@ -54,7 +58,8 @@ public class RefreshFailedException extends Exception {
      *
      * @param msg the detail message.
      */
-    public RefreshFailedException(String msg) {
+    @SideEffectFree
+    public RefreshFailedException(@Nullable String msg) {
         super(msg);
     }
 }

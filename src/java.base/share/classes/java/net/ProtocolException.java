@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.IOException;
 
 /**
@@ -44,13 +47,15 @@ public class ProtocolException extends IOException {
      *
      * @param   message   the detail message.
      */
-    public ProtocolException(String message) {
+    @SideEffectFree
+    public ProtocolException(@Nullable String message) {
         super(message);
     }
 
     /**
      * Constructs a new {@code ProtocolException} with no detail message.
      */
+    @SideEffectFree
     public ProtocolException() {
     }
 }

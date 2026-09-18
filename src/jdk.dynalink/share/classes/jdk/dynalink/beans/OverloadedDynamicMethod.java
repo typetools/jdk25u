@@ -60,6 +60,8 @@
 
 package jdk.dynalink.beans;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.text.Collator;
@@ -194,6 +196,7 @@ class OverloadedDynamicMethod extends DynamicMethod {
     }
 
     @Override
+    @Pure
     public boolean contains(final SingleDynamicMethod m) {
         for(final SingleDynamicMethod method: methods) {
             if(method.contains(m)) {

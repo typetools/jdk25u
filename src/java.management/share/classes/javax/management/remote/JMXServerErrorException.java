@@ -26,6 +26,8 @@
 
 package javax.management.remote;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.io.IOException;
 
 // imports for javadoc
@@ -55,12 +57,12 @@ public class JMXServerErrorException extends IOException {
      * constructed where this parameter is null, but the standard
      * connectors will never do so.
      */
-    public JMXServerErrorException(String s, Error err) {
+    public JMXServerErrorException(@Nullable String s, @Nullable Error err) {
         super(s);
         cause = err;
     }
 
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return cause;
     }
 
@@ -68,5 +70,5 @@ public class JMXServerErrorException extends IOException {
      * @serial An {@link Error} that caused this exception to be thrown.
      * @see #getCause()
      **/
-    private final Error cause;
+    private final @Nullable Error cause;
 }

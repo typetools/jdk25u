@@ -25,6 +25,9 @@
 
 package java.lang;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown to indicate that an {@code invokedynamic} instruction or a dynamic
  * constant failed to resolve its bootstrap method and arguments,
@@ -46,6 +49,7 @@ public class BootstrapMethodError extends LinkageError {
     /**
      * Constructs a {@code BootstrapMethodError} with no detail message.
      */
+    @SideEffectFree
     public BootstrapMethodError() {
         super();
     }
@@ -56,7 +60,8 @@ public class BootstrapMethodError extends LinkageError {
      *
      * @param s the detail message.
      */
-    public BootstrapMethodError(String s) {
+    @SideEffectFree
+    public BootstrapMethodError(@Nullable String s) {
         super(s);
     }
 
@@ -67,7 +72,8 @@ public class BootstrapMethodError extends LinkageError {
      * @param s the detail message.
      * @param cause the cause, may be {@code null}.
      */
-    public BootstrapMethodError(String s, Throwable cause) {
+    @SideEffectFree
+    public BootstrapMethodError(@Nullable String s, @Nullable Throwable cause) {
         super(s, cause);
     }
 
@@ -77,8 +83,10 @@ public class BootstrapMethodError extends LinkageError {
      *
      * @param cause the cause, may be {@code null}.
      */
-    @SuppressWarnings("this-escape")
-    public BootstrapMethodError(Throwable cause) {
+    @SideEffectFree
+    @SuppressWarnings({"this-escape",
+            "purity.not.sideeffectfree.call"}) // initCause affects only the new object
+    public BootstrapMethodError(@Nullable Throwable cause) {
         // cf. Throwable(Throwable cause) constructor.
         super(cause == null ? null : cause.toString());
         initCause(cause);

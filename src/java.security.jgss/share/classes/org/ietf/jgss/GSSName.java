@@ -25,6 +25,12 @@
 
 package org.ietf.jgss;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This interface encapsulates a single GSS-API principal entity. The
  * application obtains an implementation of this interface
@@ -187,8 +193,10 @@ public interface GSSName {
      * @param another the object to compare this name to
      * @see #equals(GSSName)
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    boolean equals(Object another);
+    boolean equals(@Nullable Object another);
 
     /**
      * {@return a hashcode value for this GSSName}

@@ -22,6 +22,12 @@
  */
 package jdk.vm.ci.meta;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -117,7 +123,7 @@ public final class Assumptions implements Iterable<Assumptions.Assumption> {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof NoFinalizableSubclass) {
                 NoFinalizableSubclass other = (NoFinalizableSubclass) obj;
                 return other.receiverType.equals(receiverType);
@@ -166,7 +172,7 @@ public final class Assumptions implements Iterable<Assumptions.Assumption> {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof ConcreteSubtype) {
                 ConcreteSubtype other = (ConcreteSubtype) obj;
                 return other.context.equals(context) && other.subtype.equals(subtype);
@@ -204,7 +210,7 @@ public final class Assumptions implements Iterable<Assumptions.Assumption> {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof LeafType) {
                 LeafType other = (LeafType) obj;
                 return other.context.equals(context);
@@ -256,7 +262,7 @@ public final class Assumptions implements Iterable<Assumptions.Assumption> {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof ConcreteMethod) {
                 ConcreteMethod other = (ConcreteMethod) obj;
                 return other.method.equals(method) && other.context.equals(context) && other.impl.equals(impl);
@@ -293,7 +299,7 @@ public final class Assumptions implements Iterable<Assumptions.Assumption> {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof CallSiteTargetValue) {
                 CallSiteTargetValue other = (CallSiteTargetValue) obj;
                 return callSite.equals(other.callSite) && methodHandle.equals(other.methodHandle);
@@ -324,7 +330,9 @@ public final class Assumptions implements Iterable<Assumptions.Assumption> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }

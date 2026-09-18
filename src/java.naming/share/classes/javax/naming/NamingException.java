@@ -25,6 +25,8 @@
 
 package javax.naming;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
   * This is the superclass of all exceptions thrown by
   * operations in the Context and DirContext interfaces.
@@ -123,7 +125,7 @@ public class NamingException extends Exception {
      *                          additional detail about this exception.
      * @see java.lang.Throwable#getMessage
      */
-    public NamingException(String explanation) {
+    public NamingException(@Nullable String explanation) {
         super(explanation);
         resolvedName = remainingName = null;
         resolvedObj = null;
@@ -188,7 +190,7 @@ public class NamingException extends Exception {
       *
       * @see java.lang.Throwable#getMessage
       */
-    public String getExplanation() {
+    public @Nullable String getExplanation() {
         return getMessage();
     }
 
@@ -357,7 +359,7 @@ public class NamingException extends Exception {
       * @see #initCause(Throwable)
       * @since 1.4
       */
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return getRootCause();
     }
 

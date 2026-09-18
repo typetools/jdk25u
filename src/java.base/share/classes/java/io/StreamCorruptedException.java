@@ -25,12 +25,17 @@
 
 package java.io;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Thrown when control information that was read from an object stream
  * violates internal consistency checks.
  *
  * @since   1.1
  */
+@AnnotatedFor({"nullness"})
 public class StreamCorruptedException extends ObjectStreamException {
 
     @java.io.Serial
@@ -41,13 +46,15 @@ public class StreamCorruptedException extends ObjectStreamException {
      *
      * @param reason  String describing the reason for the exception.
      */
-    public StreamCorruptedException(String reason) {
+    @SideEffectFree
+    public StreamCorruptedException(@Nullable String reason) {
         super(reason);
     }
 
     /**
      * Create a StreamCorruptedException and list no reason why thrown.
      */
+    @SideEffectFree
     public StreamCorruptedException() {
         super();
     }

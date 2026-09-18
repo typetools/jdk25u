@@ -22,6 +22,8 @@
  */
 package com.sun.org.apache.xml.internal.security.keys.keyresolver;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.lang.reflect.InvocationTargetException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -294,6 +296,7 @@ public class KeyResolver {
             it = res.iterator();
         }
 
+        @Pure
         @Override
         public boolean hasNext() {
             return it.hasNext();

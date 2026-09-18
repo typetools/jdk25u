@@ -25,6 +25,9 @@
 
 package com.sun.tools.javac.code;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -554,7 +557,7 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
      * Override this method with care. For most Type instances this should behave as ==.
      */
     @Override @DefinedBy(Api.LANGUAGE_MODEL)
-    public boolean equals(Object t) {
+    public boolean equals(@Nullable Object t) {
         return this == t;
     }
 
@@ -672,10 +675,12 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
     /**
      * Does this type contain occurrences of type t?
      */
+    @Pure
     public boolean contains(Type t) {
         return t.equalsIgnoreMetadata(this);
     }
 
+    @Pure
     public static boolean contains(List<Type> ts, Type t) {
         for (List<Type> l = ts;
              l.tail != null /*inlined: l.nonEmpty()*/;
@@ -686,12 +691,14 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
 
     /** Does this type contain an occurrence of some type in 'ts'?
      */
+    @Pure
     public boolean containsAny(List<Type> ts) {
         for (Type t : ts)
             if (this.contains(t)) return true;
         return false;
     }
 
+    @Pure
     public static boolean containsAny(List<Type> ts1, List<Type> ts2) {
         for (Type t : ts1)
             if (t.containsAny(ts2)) return true;
@@ -907,6 +914,7 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
         }
 
         @Override
+        @Pure
         public boolean contains(Type t) {
             return kind != UNBOUND && type.contains(t);
         }
@@ -1197,6 +1205,7 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
                 allparams().isEmpty();
         }
 
+        @Pure
         public boolean contains(Type elem) {
             return
                 elem.equalsIgnoreMetadata(this)
@@ -1400,7 +1409,7 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
         }
 
         @Override @DefinedBy(Api.LANGUAGE_MODEL)
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj instanceof ArrayType arrayType)
                     && (this == arrayType || elemtype.equals(arrayType.elemtype));
         }
@@ -1447,6 +1456,7 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
             };
         }
 
+        @Pure
         public boolean contains(Type elem) {
             return elem.equalsIgnoreMetadata(this) || elemtype.contains(elem);
         }
@@ -1540,6 +1550,7 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
             return ClassFile.CONSTANT_MethodType;
         }
 
+        @Pure
         public boolean contains(Type elem) {
             return elem.equalsIgnoreMetadata(this) || contains(argtypes, elem) || restype.contains(elem) || contains(thrown, elem);
         }
@@ -1878,6 +1889,7 @@ public abstract class Type extends AnnoConstruct implements TypeMirror, PoolCons
             return qtype.isErroneous();
         }
 
+        @Pure
         public boolean contains(Type elem) {
             return qtype.contains(elem);
         }

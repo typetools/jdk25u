@@ -25,6 +25,12 @@
 
 package java.security.cert;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.ByteArrayInputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectStreamException;
@@ -178,8 +184,10 @@ public abstract class CertPath implements Serializable {
      * @return true if the specified object is equal to this certification path,
      * false otherwise
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (this == other)
             return true;
 

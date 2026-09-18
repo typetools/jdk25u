@@ -25,6 +25,9 @@
 
 package com.sun.tools.jdeps;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import com.sun.tools.jdeps.Dependency.Location;
 
 import java.io.BufferedReader;
@@ -336,7 +339,7 @@ public class Analyzer {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (o instanceof Dep) {
                 Dep d = (Dep) o;
                 return this.origin.equals(d.origin) &&
@@ -395,6 +398,7 @@ public class Analyzer {
             return getName();
         }
 
+        @Pure
         public boolean contains(Location location) {
             String cn = location.getClassName();
             int i = cn.lastIndexOf('.');

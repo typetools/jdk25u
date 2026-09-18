@@ -26,6 +26,9 @@
 
 package javax.security.cert;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Certificate Parsing Exception. This is thrown whenever
  * invalid DER encoded certificate is parsed or unsupported DER features
@@ -53,6 +56,7 @@ public class CertificateParsingException extends CertificateException {
      * detail message is a String that describes this particular
      * exception.
      */
+    @SideEffectFree
     public CertificateParsingException() {
         super();
     }
@@ -64,7 +68,8 @@ public class CertificateParsingException extends CertificateException {
      *
      * @param message the detail message.
      */
-    public CertificateParsingException(String message) {
+    @SideEffectFree
+    public CertificateParsingException(@Nullable String message) {
         super(message);
     }
 }

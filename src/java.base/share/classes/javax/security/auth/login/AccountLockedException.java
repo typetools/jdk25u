@@ -25,6 +25,9 @@
 
 package javax.security.auth.login;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that an account was locked.
  *
@@ -43,6 +46,7 @@ public class AccountLockedException extends AccountException {
      * Constructs a AccountLockedException with no detail message.
      * A detail message is a String that describes this particular exception.
      */
+    @SideEffectFree
     public AccountLockedException() {
         super();
     }
@@ -54,7 +58,8 @@ public class AccountLockedException extends AccountException {
      *
      * @param msg the detail message.
      */
-    public AccountLockedException(String msg) {
+    @SideEffectFree
+    public AccountLockedException(@Nullable String msg) {
         super(msg);
     }
 }

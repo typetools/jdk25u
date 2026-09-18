@@ -24,6 +24,12 @@
  */
 package java.util;
 
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
@@ -65,6 +71,7 @@ import java.util.function.LongConsumer;
  *
  * @since 1.8
  */
+@AnnotatedFor({"lock", "nullness"})
 public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
 
     /**
@@ -84,6 +91,7 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
      * @param action The action to be performed for each element
      * @throws NullPointerException if the specified action is null
      */
+    @DoesNotUnrefineReceiver("modifiability")
     void forEachRemaining(T_CONS action);
 
     /**
@@ -99,7 +107,9 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * @return the next {@code int} element in the iteration
          * @throws NoSuchElementException if the iteration has no more elements
          */
-        int nextInt();
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        int nextInt(@NonEmpty OfInt this);
 
         /**
          * {@inheritDoc}
@@ -110,6 +120,7 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          *         action.accept(nextInt());
          * }</pre>
          */
+        @DoesNotUnrefineReceiver("modifiability")
         default void forEachRemaining(IntConsumer action) {
             Objects.requireNonNull(action);
             while (hasNext())
@@ -123,7 +134,9 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * {@link #nextInt()}, and returns that boxed result.
          */
         @Override
-        default Integer next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        default Integer next(PrimitiveIterator.@GuardSatisfied OfInt this) {
             if (Tripwire.ENABLED)
                 Tripwire.trip(getClass(), "{0} calling PrimitiveIterator.OfInt.nextInt()");
             return nextInt();
@@ -139,6 +152,7 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * and then passed to {@link #forEachRemaining}.
          */
         @Override
+        @DoesNotUnrefineReceiver("modifiability")
         default void forEachRemaining(Consumer<? super Integer> action) {
             if (action instanceof IntConsumer) {
                 forEachRemaining((IntConsumer) action);
@@ -167,7 +181,9 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * @return the next {@code long} element in the iteration
          * @throws NoSuchElementException if the iteration has no more elements
          */
-        long nextLong();
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        long nextLong(@NonEmpty OfLong this);
 
         /**
          * {@inheritDoc}
@@ -178,6 +194,7 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          *         action.accept(nextLong());
          * }</pre>
          */
+        @DoesNotUnrefineReceiver("modifiability")
         default void forEachRemaining(LongConsumer action) {
             Objects.requireNonNull(action);
             while (hasNext())
@@ -191,7 +208,9 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * {@link #nextLong()}, and returns that boxed result.
          */
         @Override
-        default Long next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        default Long next(PrimitiveIterator.@GuardSatisfied OfLong this) {
             if (Tripwire.ENABLED)
                 Tripwire.trip(getClass(), "{0} calling PrimitiveIterator.OfLong.nextLong()");
             return nextLong();
@@ -207,6 +226,7 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * and then passed to {@link #forEachRemaining}.
          */
         @Override
+        @DoesNotUnrefineReceiver("modifiability")
         default void forEachRemaining(Consumer<? super Long> action) {
             if (action instanceof LongConsumer) {
                 forEachRemaining((LongConsumer) action);
@@ -234,7 +254,9 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * @return the next {@code double} element in the iteration
          * @throws NoSuchElementException if the iteration has no more elements
          */
-        double nextDouble();
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        double nextDouble(@NonEmpty OfDouble this);
 
         /**
          * {@inheritDoc}
@@ -245,6 +267,7 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          *         action.accept(nextDouble());
          * }</pre>
          */
+        @DoesNotUnrefineReceiver("modifiability")
         default void forEachRemaining(DoubleConsumer action) {
             Objects.requireNonNull(action);
             while (hasNext())
@@ -258,7 +281,9 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * {@link #nextDouble()}, and returns that boxed result.
          */
         @Override
-        default Double next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        default Double next(PrimitiveIterator.@GuardSatisfied OfDouble this) {
             if (Tripwire.ENABLED)
                 Tripwire.trip(getClass(), "{0} calling PrimitiveIterator.OfDouble.nextLong()");
             return nextDouble();
@@ -275,6 +300,7 @@ public interface PrimitiveIterator<T, T_CONS> extends Iterator<T> {
          * {@link #forEachRemaining}.
          */
         @Override
+        @DoesNotUnrefineReceiver("modifiability")
         default void forEachRemaining(Consumer<? super Double> action) {
             if (action instanceof DoubleConsumer) {
                 forEachRemaining((DoubleConsumer) action);

@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that an error occurred while attempting to connect a
  * socket to a remote address and port.  Typically, the connection
@@ -44,12 +47,14 @@ public class ConnectException extends SocketException {
      * description of this error.
      * @param msg the detail message
      */
-    public ConnectException(String msg) {
+    @SideEffectFree
+    public ConnectException(@Nullable String msg) {
         super(msg);
     }
 
     /**
      * Construct a new ConnectException with no detailed message.
      */
+    @SideEffectFree
     public ConnectException() {}
 }

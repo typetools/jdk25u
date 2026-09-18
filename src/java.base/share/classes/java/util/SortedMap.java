@@ -25,6 +25,17 @@
 
 package java.util;
 
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.KeyFor;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.CFComment;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 /**
  * A {@link Map} that further provides a <em>total ordering</em> on its keys.
  * The map is ordered according to the {@linkplain Comparable natural
@@ -110,6 +121,8 @@ package java.util;
  * @since 1.2
  */
 
+@CFComment({"lock/nullness: Subclasses of this interface/class may opt to prohibit null elements"})
+@AnnotatedFor({"lock", "nullness"})
 public interface SortedMap<K,V> extends SequencedMap<K,V> {
     /**
      * Returns the comparator used to order the keys in this map, or
@@ -120,7 +133,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      *         or {@code null} if this map uses the natural ordering
      *         of its keys
      */
-    Comparator<? super K> comparator();
+    @Pure
+    @Nullable Comparator<? super K> comparator(@GuardSatisfied SortedMap<K, V> this);
 
     /**
      * Returns a view of the portion of this map whose keys range from
@@ -151,7 +165,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      *         range, and {@code fromKey} or {@code toKey} lies
      *         outside the bounds of the range
      */
-    SortedMap<K,V> subMap(K fromKey, K toKey);
+    @SideEffectFree
+    SortedMap<K,V> subMap(@GuardSatisfied SortedMap<K, V> this, @GuardSatisfied K fromKey, @GuardSatisfied K toKey);
 
     /**
      * Returns a view of the portion of this map whose keys are
@@ -178,7 +193,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      *         restricted range, and {@code toKey} lies outside the
      *         bounds of the range
      */
-    SortedMap<K,V> headMap(K toKey);
+    @SideEffectFree
+    SortedMap<K,V> headMap(@GuardSatisfied SortedMap<K, V> this, K toKey);
 
     /**
      * Returns a view of the portion of this map whose keys are
@@ -205,7 +221,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      *         restricted range, and {@code fromKey} lies outside the
      *         bounds of the range
      */
-    SortedMap<K,V> tailMap(K fromKey);
+    @SideEffectFree
+    SortedMap<K,V> tailMap(@GuardSatisfied SortedMap<K, V> this, K fromKey);
 
     /**
      * Returns the first (lowest) key currently in this map.
@@ -213,7 +230,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @return the first (lowest) key currently in this map
      * @throws NoSuchElementException if this map is empty
      */
-    K firstKey();
+    @SideEffectFree
+    @KeyFor("this") K firstKey(@GuardSatisfied @NonEmpty SortedMap<K, V> this);
 
     /**
      * Returns the last (highest) key currently in this map.
@@ -221,7 +239,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @return the last (highest) key currently in this map
      * @throws NoSuchElementException if this map is empty
      */
-    K lastKey();
+    @SideEffectFree
+    @KeyFor("this") K lastKey(@GuardSatisfied @NonEmpty SortedMap<K, V> this);
 
     /**
      * Returns a {@link Set} view of the keys contained in this map.
@@ -240,7 +259,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @return a set view of the keys contained in this map, sorted in
      *         ascending order
      */
-    Set<K> keySet();
+    @SideEffectFree
+    Set<@KeyFor({"this"}) K> keySet(@GuardSatisfied SortedMap<K, V> this);
 
     /**
      * Returns a {@link Collection} view of the values contained in this map.
@@ -260,7 +280,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @return a collection view of the values contained in this map,
      *         sorted in ascending key order
      */
-    Collection<V> values();
+    @SideEffectFree
+    Collection<V> values(@GuardSatisfied SortedMap<K, V> this);
 
     /**
      * Returns a {@link Set} view of the mappings contained in this map.
@@ -280,7 +301,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @return a set view of the mappings contained in this map,
      *         sorted in ascending key order
      */
-    Set<Map.Entry<K, V>> entrySet();
+    @SideEffectFree
+    Set<Map.Entry<@KeyFor({"this"}) K, V>> entrySet(@GuardSatisfied SortedMap<K, V> this);
 
     /**
      * Throws {@code UnsupportedOperationException}. The encounter order induced by this
@@ -293,7 +315,9 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @throws UnsupportedOperationException always
      * @since 21
      */
-     default V putFirst(K k, V v) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+     default @Nullable V putFirst(K k, V v) {
         throw new UnsupportedOperationException();
     }
 
@@ -308,7 +332,9 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @throws UnsupportedOperationException always
      * @since 21
      */
-    default V putLast(K k, V v) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    default @Nullable V putLast(K k, V v) {
         throw new UnsupportedOperationException();
     }
 
@@ -328,6 +354,8 @@ public interface SortedMap<K,V> extends SequencedMap<K,V> {
      * @return a reverse-ordered view of this map, as a {@code SortedMap}
      * @since 21
      */
+    @SideEffectFree
+    @DoesNotUnrefineReceiver("modifiability")
     default SortedMap<K, V> reversed() {
         return ReverseOrderSortedMapView.of(this);
     }

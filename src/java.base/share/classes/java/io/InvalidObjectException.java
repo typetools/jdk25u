@@ -25,6 +25,10 @@
 
 package java.io;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Indicates that one or more deserialized objects failed validation
  * tests.  The argument should provide the reason for the failure.
@@ -32,6 +36,7 @@ package java.io;
  * @see ObjectInputValidation
  * @since 1.1
  */
+@AnnotatedFor({"nullness"})
 public class InvalidObjectException extends ObjectStreamException {
 
     @java.io.Serial
@@ -43,7 +48,8 @@ public class InvalidObjectException extends ObjectStreamException {
      *
      * @see ObjectInputValidation
      */
-    public InvalidObjectException(String reason) {
+    @SideEffectFree
+    public InvalidObjectException(@Nullable String reason) {
         super(reason);
     }
 
@@ -57,7 +63,8 @@ public class InvalidObjectException extends ObjectStreamException {
      * @see ObjectInputValidation
      * @since 19
      */
-    public InvalidObjectException(String reason, Throwable cause) {
+    @SideEffectFree
+    public InvalidObjectException(@Nullable String reason, @Nullable Throwable cause) {
         super(reason, cause);
     }
 }

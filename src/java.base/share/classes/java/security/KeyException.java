@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This is the basic key exception.
  *
@@ -45,6 +48,7 @@ public class KeyException extends GeneralSecurityException {
      * Constructs a {@code KeyException} with no detail message. A detail
      * message is a {@code String} that describes this particular exception.
      */
+    @SideEffectFree
     public KeyException() {
         super();
     }
@@ -56,7 +60,8 @@ public class KeyException extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-    public KeyException(String msg) {
+    @SideEffectFree
+    public KeyException(@Nullable String msg) {
         super(msg);
     }
 
@@ -71,7 +76,8 @@ public class KeyException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public KeyException(String message, Throwable cause) {
+    @SideEffectFree
+    public KeyException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -86,7 +92,8 @@ public class KeyException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public KeyException(Throwable cause) {
+    @SideEffectFree
+    public KeyException(@Nullable Throwable cause) {
         super(cause);
     }
 }

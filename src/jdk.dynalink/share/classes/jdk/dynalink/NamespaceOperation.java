@@ -60,6 +60,9 @@
 
 package jdk.dynalink;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -215,6 +218,7 @@ public final class NamespaceOperation implements Operation {
      * @return true if the if this namespace operation contains a namespace
      * equal to the specified namespace.
      */
+    @Pure
     public boolean contains(final Namespace namespace) {
         Objects.requireNonNull(namespace);
         for(final Namespace component: namespaces) {
@@ -232,7 +236,7 @@ public final class NamespaceOperation implements Operation {
      * @return true if this object is equal to the other one, false otherwise.
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(final @Nullable Object obj) {
         if (obj instanceof NamespaceOperation) {
             final NamespaceOperation other = (NamespaceOperation)obj;
             return baseOperation.equals(other.baseOperation) && Arrays.equals(namespaces, other.namespaces);
@@ -299,6 +303,7 @@ public final class NamespaceOperation implements Operation {
      * its base operation equals the searched base operation, and contains a namespace
      * equal to the searched namespace.
      */
+    @Pure
     public static boolean contains(final Operation op, final Operation baseOperation, final Namespace namespace) {
         if (op instanceof NamespaceOperation) {
             final NamespaceOperation no = (NamespaceOperation)op;

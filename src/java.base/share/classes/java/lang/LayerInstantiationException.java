@@ -25,6 +25,9 @@
 
 package java.lang;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown when creating a {@linkplain ModuleLayer module layer} fails.
  *
@@ -38,6 +41,7 @@ public class LayerInstantiationException extends RuntimeException {
     /**
      * Constructs a {@code LayerInstantiationException} with no detail message.
      */
+    @SideEffectFree
     public LayerInstantiationException() {
     }
 
@@ -48,7 +52,8 @@ public class LayerInstantiationException extends RuntimeException {
      * @param msg
      *        The detail message; can be {@code null}
      */
-    public LayerInstantiationException(String msg) {
+    @SideEffectFree
+    public LayerInstantiationException(@Nullable String msg) {
         super(msg);
     }
 
@@ -58,7 +63,8 @@ public class LayerInstantiationException extends RuntimeException {
      * @param cause
      *        The cause; can be {@code null}
      */
-    public LayerInstantiationException(Throwable cause) {
+    @SideEffectFree
+    public LayerInstantiationException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -71,7 +77,8 @@ public class LayerInstantiationException extends RuntimeException {
      * @param cause
      *        The cause; can be {@code null}
      */
-    public LayerInstantiationException(String msg, Throwable cause) {
+    @SideEffectFree
+    public LayerInstantiationException(@Nullable String msg, @Nullable Throwable cause) {
         super(msg, cause);
     }
 }

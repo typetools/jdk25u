@@ -25,6 +25,9 @@
 
 package java.security.cert;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.InvalidObjectException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -85,6 +88,7 @@ public class CertPathValidatorException extends GeneralSecurityException {
      * Creates a {@code CertPathValidatorException} with
      * no detail message.
      */
+    @SideEffectFree
     public CertPathValidatorException() {
         this(null, null);
     }
@@ -96,7 +100,8 @@ public class CertPathValidatorException extends GeneralSecurityException {
      *
      * @param msg the detail message
      */
-    public CertPathValidatorException(String msg) {
+    @SideEffectFree
+    public CertPathValidatorException(@Nullable String msg) {
         this(msg, null);
     }
 
@@ -113,7 +118,8 @@ public class CertPathValidatorException extends GeneralSecurityException {
      * {@link #getCause getCause()} method). (A {@code null} value is
      * permitted, and indicates that the cause is nonexistent or unknown.)
      */
-    public CertPathValidatorException(Throwable cause) {
+    @SideEffectFree
+    public CertPathValidatorException(@Nullable Throwable cause) {
         this((cause == null ? null : cause.toString()), cause);
     }
 
@@ -126,7 +132,8 @@ public class CertPathValidatorException extends GeneralSecurityException {
      * {@link #getCause getCause()} method). (A {@code null} value is
      * permitted, and indicates that the cause is nonexistent or unknown.)
      */
-    public CertPathValidatorException(String msg, Throwable cause) {
+    @SideEffectFree
+    public CertPathValidatorException(@Nullable String msg, @Nullable Throwable cause) {
         this(msg, cause, null, -1);
     }
 
@@ -147,7 +154,8 @@ public class CertPathValidatorException extends GeneralSecurityException {
      * @throws IllegalArgumentException if {@code certPath} is
      * {@code null} and {@code index} is not -1
      */
-    public CertPathValidatorException(String msg, Throwable cause,
+    @SideEffectFree
+    public CertPathValidatorException(@Nullable String msg, @Nullable Throwable cause,
             CertPath certPath, int index) {
         this(msg, cause, certPath, index, BasicReason.UNSPECIFIED);
     }
@@ -173,7 +181,9 @@ public class CertPathValidatorException extends GeneralSecurityException {
      *
      * @since 1.7
      */
-    public CertPathValidatorException(String msg, Throwable cause,
+    @SideEffectFree
+    @SuppressWarnings("purity.not.sideeffectfree.call") // getCertificates() has no side effect
+    public CertPathValidatorException(@Nullable String msg, @Nullable Throwable cause,
             CertPath certPath, int index, Reason reason) {
         super(msg, cause);
         if (certPath == null && index != -1) {

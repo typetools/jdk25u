@@ -25,6 +25,8 @@
 
 package javax.xml.stream;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 
@@ -308,6 +310,7 @@ public interface XMLStreamReader extends XMLStreamConstants {
    * @return true if there are more events, false otherwise
    * @throws XMLStreamException if there is a fatal error detecting the next state
    */
+  @Pure
   public boolean hasNext() throws XMLStreamException;
 
   /**

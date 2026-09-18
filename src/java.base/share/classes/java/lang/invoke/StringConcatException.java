@@ -25,6 +25,9 @@
 
 package java.lang.invoke;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * StringConcatException is thrown by {@link StringConcatFactory} when linkage
  * invariants are violated.
@@ -39,7 +42,8 @@ public class StringConcatException extends Exception {
      * Constructs an exception with a message
      * @param msg exception message
      */
-    public StringConcatException(String msg) {
+    @SideEffectFree
+    public StringConcatException(@Nullable String msg) {
         super(msg);
     }
 
@@ -48,7 +52,8 @@ public class StringConcatException extends Exception {
      * @param msg   exception message
      * @param cause throwable cause
      */
-    public StringConcatException(String msg, Throwable cause) {
+    @SideEffectFree
+    public StringConcatException(@Nullable String msg, @Nullable Throwable cause) {
         super(msg, cause);
     }
 }

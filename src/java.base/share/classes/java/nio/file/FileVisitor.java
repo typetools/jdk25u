@@ -25,6 +25,9 @@
 
 package java.nio.file;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.nio.file.attribute.BasicFileAttributes;
 import java.io.IOException;
 
@@ -96,6 +99,7 @@ import java.io.IOException;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public interface FileVisitor<T> {
 
     /**
@@ -173,6 +177,6 @@ public interface FileVisitor<T> {
      * @throws  IOException
      *          if an I/O error occurs
      */
-    FileVisitResult postVisitDirectory(T dir, IOException exc)
+    FileVisitResult postVisitDirectory(T dir, @Nullable IOException exc)
         throws IOException;
 }

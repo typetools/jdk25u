@@ -25,6 +25,9 @@
 
 package com.sun.tools.javac.code;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.lang.ref.SoftReference;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -1515,6 +1518,7 @@ public class Types {
         }
     }
 
+    @Pure
     boolean containsType(List<Type> ts, List<Type> ss) {
         while (ts.nonEmpty() && ss.nonEmpty()
                && containsType(ts.head, ss.head)) {
@@ -1549,6 +1553,7 @@ public class Types {
      * @param t a type
      * @param s a type
      */
+    @Pure
     public boolean containsType(Type t, Type s) {
         return containsType.visit(t, s);
     }
@@ -1617,6 +1622,7 @@ public class Types {
         return w.kind == t.kind && w.type == t.type;
     }
 
+    @Pure
     public boolean containsTypeEquivalent(List<Type> ts, List<Type> ss) {
         while (ts.nonEmpty() && ss.nonEmpty()
                && containsTypeEquivalent(ts.head, ss.head)) {
@@ -3181,7 +3187,7 @@ public class Types {
             }
 
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 return (obj instanceof Entry entry)
                         && entry.msym == msym
                         && isSameType(site, entry.site);
@@ -3871,7 +3877,7 @@ public class Types {
                 return 127 * Types.this.hashCode(t1) + Types.this.hashCode(t2);
             }
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 return (obj instanceof TypePair typePair)
                         && isSameType(t1, typePair.t1)
                         && isSameType(t2, typePair.t2);
@@ -4907,7 +4913,7 @@ public class Types {
             return types.hashCode(type);
         }
 
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj instanceof UniqueType uniqueType) &&
                     types.isSameType(type, uniqueType.type);
         }

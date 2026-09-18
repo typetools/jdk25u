@@ -24,6 +24,8 @@
  */
 package jdk.tools.jlink.internal;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.module.ModuleDescriptor;
@@ -431,6 +433,7 @@ public final class ImagePluginStack {
         }
 
         @Override
+        @Pure
         public boolean contains(ResourcePoolEntry res) {
             return pool.contains(res);
         }

@@ -25,6 +25,12 @@
 
 package sun.security.pkcs;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import jdk.internal.access.SharedSecrets;
 import sun.security.util.*;
 import sun.security.x509.AlgorithmId;
@@ -371,8 +377,10 @@ public class PKCS8Key implements PrivateKey, InternalPrivateKey {
      * @return {@code true} if this key has the same encoding as the
      *          object argument; {@code false} otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(@Nullable Object object) {
         if (this == object) {
             return true;
         }

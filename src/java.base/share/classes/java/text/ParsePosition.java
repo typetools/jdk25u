@@ -38,6 +38,14 @@
 
 package java.text;
 
+import org.checkerframework.checker.index.qual.GTENegativeOne;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
 
 /**
  * {@code ParsePosition} is a simple class used by {@code Format}
@@ -55,6 +63,7 @@ package java.text;
  * @see         java.text.Format
  */
 
+@AnnotatedFor({"index"})
 public class ParsePosition {
 
     /**
@@ -63,8 +72,8 @@ public class ParsePosition {
      * This is designed to be used serially,
      * with each call setting index up for the next one.
      */
-    int index = 0;
-    int errorIndex = -1;
+    @NonNegative int index = 0;
+    @GTENegativeOne int errorIndex = -1;
 
     /**
      * Retrieve the current parse position.  On input to a parse method, this
@@ -73,7 +82,7 @@ public class ParsePosition {
      *
      * @return the current parse position
      */
-    public int getIndex() {
+    public @NonNegative int getIndex() {
         return index;
     }
 
@@ -82,7 +91,7 @@ public class ParsePosition {
      *
      * @param index the current parse position
      */
-    public void setIndex(int index) {
+    public void setIndex(@NonNegative int index) {
         this.index = index;
     }
 
@@ -91,7 +100,7 @@ public class ParsePosition {
      *
      * @param index initial index
      */
-    public ParsePosition(int index) {
+    public ParsePosition(@NonNegative int index) {
         this.index = index;
     }
     /**
@@ -102,7 +111,7 @@ public class ParsePosition {
      * @param ei the index at which an error occurred
      * @since 1.2
      */
-    public void setErrorIndex(int ei)
+    public void setErrorIndex(@GTENegativeOne int ei)
     {
         errorIndex = ei;
     }
@@ -114,7 +123,7 @@ public class ParsePosition {
      * @return the index at which an error occurred
      * @since 1.2
      */
-    public int getErrorIndex()
+    public @GTENegativeOne int getErrorIndex()
     {
         return errorIndex;
     }
@@ -122,8 +131,10 @@ public class ParsePosition {
     /**
      * Overrides equals
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         return obj instanceof ParsePosition other
                 && index == other.index && errorIndex == other.errorIndex;

@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * A runtime exception for {@code Provider} exceptions (such as
  * misconfiguration errors or unrecoverable internal errors),
@@ -44,6 +47,7 @@ public class ProviderException extends RuntimeException {
      * detail message is a {@code String} that describes this particular
      * exception.
      */
+    @SideEffectFree
     public ProviderException() {
         super();
     }
@@ -55,7 +59,8 @@ public class ProviderException extends RuntimeException {
      *
      * @param s the detail message.
      */
-    public ProviderException(String s) {
+    @SideEffectFree
+    public ProviderException(@Nullable String s) {
         super(s);
     }
 
@@ -70,7 +75,8 @@ public class ProviderException extends RuntimeException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public ProviderException(String message, Throwable cause) {
+    @SideEffectFree
+    public ProviderException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -85,7 +91,8 @@ public class ProviderException extends RuntimeException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public ProviderException(Throwable cause) {
+    @SideEffectFree
+    public ProviderException(@Nullable Throwable cause) {
         super(cause);
     }
 }

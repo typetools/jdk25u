@@ -26,6 +26,7 @@
 package javax.management;
 
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents runtime exceptions thrown in the agent when performing operations on MBeans.
@@ -61,7 +62,7 @@ public class RuntimeOperationsException extends JMRuntimeException   {
      * @param e the wrapped exception.
      * @param message the detail message.
      */
-    public RuntimeOperationsException(java.lang.RuntimeException e, String message) {
+    public RuntimeOperationsException(java.lang.RuntimeException e, @Nullable String message) {
         super(message);
         runtimeException = e ;
     }
@@ -80,7 +81,7 @@ public class RuntimeOperationsException extends JMRuntimeException   {
      *
      * @return the wrapped {@link RuntimeException}.
      */
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return runtimeException;
     }
 }

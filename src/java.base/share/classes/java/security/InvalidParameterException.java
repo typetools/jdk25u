@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This exception, designed for use by the JCA/JCE engine classes,
  * is thrown when an invalid parameter is passed
@@ -44,6 +47,7 @@ public class InvalidParameterException extends IllegalArgumentException {
      * A detail message is a {@code String} that describes this particular
      * exception.
      */
+    @SideEffectFree
     public InvalidParameterException() {
         super();
     }
@@ -55,7 +59,8 @@ public class InvalidParameterException extends IllegalArgumentException {
      *
      * @param msg the detail message.
      */
-    public InvalidParameterException(String msg) {
+    @SideEffectFree
+    public InvalidParameterException(@Nullable String msg) {
         super(msg);
     }
 
@@ -77,7 +82,8 @@ public class InvalidParameterException extends IllegalArgumentException {
      *
      * @since  20
      */
-    public InvalidParameterException(String msg, Throwable cause) {
+    @SideEffectFree
+    public InvalidParameterException(@Nullable String msg, @Nullable Throwable cause) {
         super(msg, cause);
     }
 
@@ -95,7 +101,8 @@ public class InvalidParameterException extends IllegalArgumentException {
      *
      * @since  20
      */
-    public InvalidParameterException(Throwable cause) {
+    @SideEffectFree
+    public InvalidParameterException(@Nullable Throwable cause) {
         super(cause);
     }
 }

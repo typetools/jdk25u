@@ -25,6 +25,8 @@
 
 package sun.nio.cs.ext;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.lang.ref.SoftReference;
 import java.nio.charset.Charset;
 import java.nio.charset.spi.CharsetProvider;
@@ -170,6 +172,7 @@ public class AbstractCharsetProvider
         return new Iterator<Charset>() {
                 Iterator<String> i = ks.iterator();
 
+                @Pure
                 public boolean hasNext() {
                     return i.hasNext();
                 }

@@ -25,6 +25,9 @@
 
 package java.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown by a {@code Scanner} to indicate that the token
  * retrieved does not match the pattern for the expected type, or
@@ -41,6 +44,7 @@ public class InputMismatchException extends NoSuchElementException {
      * Constructs an {@code InputMismatchException} with {@code null}
      * as its error message string.
      */
+    @SideEffectFree
     public InputMismatchException() {
         super();
     }
@@ -52,7 +56,8 @@ public class InputMismatchException extends NoSuchElementException {
      *
      * @param   s   the detail message.
      */
-    public InputMismatchException(String s) {
+    @SideEffectFree
+    public InputMismatchException(@Nullable String s) {
         super(s);
     }
 }

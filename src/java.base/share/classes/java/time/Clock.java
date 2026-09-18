@@ -61,6 +61,12 @@
  */
 package java.time;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.ObjectStreamException;
 
 import static java.time.LocalTime.NANOS_PER_MINUTE;
@@ -457,7 +463,9 @@ public abstract class Clock implements InstantSource {
      * @return true if this is equal to the other clock
      */
     @Override
-    public boolean equals(Object obj) {
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
+    public boolean equals(@Nullable Object obj) {
         return super.equals(obj);
     }
 
@@ -558,7 +566,7 @@ public abstract class Clock implements InstantSource {
             return currentInstant();
         }
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return obj instanceof SystemInstantSource;
         }
         @Override
@@ -612,7 +620,7 @@ public abstract class Clock implements InstantSource {
             return currentInstant();
         }
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof SystemClock) {
                 return zone.equals(((SystemClock) obj).zone);
             }
@@ -663,7 +671,7 @@ public abstract class Clock implements InstantSource {
             return instant;
         }
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return obj instanceof FixedClock other
                     && instant.equals(other.instant)
                     && zone.equals(other.zone);
@@ -713,7 +721,7 @@ public abstract class Clock implements InstantSource {
             return baseClock.instant().plus(offset);
         }
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return obj instanceof OffsetClock other
                     && baseClock.equals(other.baseClock)
                     && offset.equals(other.offset);
@@ -771,7 +779,7 @@ public abstract class Clock implements InstantSource {
             return instant.minusNanos(adjust);
         }
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj instanceof TickClock other)
                     && tickNanos == other.tickNanos
                     && baseClock.equals(other.baseClock);
@@ -821,7 +829,7 @@ public abstract class Clock implements InstantSource {
             return baseSource.instant();
         }
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj instanceof SourceClock other)
                     && zone.equals(other.zone)
                     && baseSource.equals(other.baseSource);

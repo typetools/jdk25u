@@ -25,6 +25,12 @@
 
 package javax.security.auth.kerberos;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.*;
 import sun.security.krb5.KrbException;
 import sun.security.krb5.PrincipalName;
@@ -213,8 +219,10 @@ public final class KerberosPrincipal
      * @return true if the object passed in represents the same principal
      * as this one, false otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
 
         if (obj == this)
             return true;

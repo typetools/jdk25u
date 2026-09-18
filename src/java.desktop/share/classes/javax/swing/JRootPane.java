@@ -24,12 +24,15 @@
  */
 package javax.swing;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.awt.*;
 import java.beans.*;
 import javax.accessibility.*;
 import javax.swing.plaf.RootPaneUI;
 import java.io.Serializable;
-
 
 /**
  * A lightweight container used behind the scenes by
@@ -190,6 +193,7 @@ import java.io.Serializable;
  * @author David Kloba
  * @since 1.2
  */
+@AnnotatedFor({"nullness"})
 @SuppressWarnings("serial")
 public class JRootPane extends JComponent implements Accessible {
 
@@ -293,7 +297,7 @@ public class JRootPane extends JComponent implements Accessible {
     private int windowDecorationStyle;
 
     /** The menu bar. */
-    protected JMenuBar menuBar;
+    protected @MonotonicNonNull JMenuBar menuBar;
 
     /** The content pane. */
     protected Container contentPane;
@@ -310,7 +314,7 @@ public class JRootPane extends JComponent implements Accessible {
      * The button that gets activated when the pane has the focus and
      * a UI-specific action like pressing the <b>Enter</b> key occurs.
      */
-    protected JButton defaultButton;
+    protected @Nullable JButton defaultButton;
 
     /**
      * Whether or not true double buffering should be used.  This is typically
@@ -518,7 +522,7 @@ public class JRootPane extends JComponent implements Accessible {
      * Adds or changes the menu bar used in the layered pane.
      * @param menu the <code>JMenuBar</code> to add
      */
-    public void setJMenuBar(JMenuBar menu) {
+    public void setJMenuBar(@Nullable JMenuBar menu) {
         if(menuBar != null && menuBar.getParent() == layeredPane)
             layeredPane.remove(menuBar);
         menuBar = menu;
@@ -536,7 +540,7 @@ public class JRootPane extends JComponent implements Accessible {
      * @param menu the <code>JMenuBar</code> to add.
      */
     @Deprecated
-    public void setMenuBar(JMenuBar menu){
+    public void setMenuBar(@Nullable JMenuBar menu){
         if(menuBar != null && menuBar.getParent() == layeredPane)
             layeredPane.remove(menuBar);
         menuBar = menu;
@@ -549,7 +553,7 @@ public class JRootPane extends JComponent implements Accessible {
      * Returns the menu bar from the layered pane.
      * @return the <code>JMenuBar</code> used in the pane
      */
-    public JMenuBar getJMenuBar() { return menuBar; }
+    public @Nullable JMenuBar getJMenuBar() { return menuBar; }
 
     /**
      * Returns the menu bar value.
@@ -558,7 +562,7 @@ public class JRootPane extends JComponent implements Accessible {
      * @return the <code>JMenuBar</code> used in the pane
      */
     @Deprecated
-    public JMenuBar getMenuBar() { return menuBar; }
+    public @Nullable JMenuBar getMenuBar() { return menuBar; }
 
     /**
      * Sets the content pane -- the container that holds the components
@@ -741,7 +745,7 @@ public class JRootPane extends JComponent implements Accessible {
      */
     @BeanProperty(description
             = "The button activated by default in this root pane")
-    public void setDefaultButton(JButton defaultButton) {
+    public void setDefaultButton(@Nullable JButton defaultButton) {
         JButton oldDefault = this.defaultButton;
 
         if (oldDefault != defaultButton) {
@@ -763,7 +767,7 @@ public class JRootPane extends JComponent implements Accessible {
      * @return the <code>JButton</code> which is currently the default button
      * @see #setDefaultButton
      */
-    public JButton getDefaultButton() {
+    public @Nullable JButton getDefaultButton() {
         return defaultButton;
     }
 
@@ -798,7 +802,7 @@ public class JRootPane extends JComponent implements Accessible {
      * @param constraints the constraints to be respected
      * @param index the index
      */
-    protected void addImpl(Component comp, Object constraints, int index) {
+    protected void addImpl(Component comp, @Nullable Object constraints, int index) {
         super.addImpl(comp, constraints, index);
 
         /// We are making sure the glassPane is on top.
@@ -945,7 +949,7 @@ public class JRootPane extends JComponent implements Accessible {
 
         public void addLayoutComponent(String name, Component comp) {}
         public void removeLayoutComponent(Component comp) {}
-        public void addLayoutComponent(Component comp, Object constraints) {}
+        public void addLayoutComponent(Component comp, @Nullable Object constraints) {}
         public float getLayoutAlignmentX(Container target) { return 0.0f; }
         public float getLayoutAlignmentY(Container target) { return 0.0f; }
         public void invalidateLayout(Container target) {}

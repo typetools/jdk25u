@@ -22,6 +22,8 @@
  */
 package com.sun.org.apache.xml.internal.security.signature;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.AccessController;
@@ -621,6 +623,7 @@ public class Reference extends SignatureElementProxy {
                             final Iterator<Node> sIterator = s.iterator();
 
                             @Override
+                            @Pure
                             public boolean hasNext() {
                                 return sIterator.hasNext();
                             }

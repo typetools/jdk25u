@@ -25,6 +25,12 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.ObjectInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -377,8 +383,10 @@ public final class URLPermission extends Permission {
      * Returns true if, this.getActions().equals(p.getActions())
      * and p's url equals this's url.  Returns false otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object p) {
+    public boolean equals(@Nullable Object p) {
         if (!(p instanceof URLPermission that)) {
             return false;
         }

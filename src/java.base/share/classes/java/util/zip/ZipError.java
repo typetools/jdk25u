@@ -25,6 +25,9 @@
 
 package java.util.zip;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that an unrecoverable error has occurred.
  *
@@ -42,7 +45,8 @@ public class ZipError extends InternalError {
      * Constructs a ZipError with the given detail message.
      * @param s the {@code String} containing a detail message
      */
-    public ZipError(String s) {
+    @SideEffectFree
+    public ZipError(@Nullable String s) {
         super(s);
     }
 }

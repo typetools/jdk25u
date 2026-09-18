@@ -25,6 +25,15 @@
 
 package java.nio.file;
 
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -97,6 +106,7 @@ import java.util.Objects;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public interface Path
     extends Comparable<Path>, Iterable<Path>, Watchable
 {
@@ -144,6 +154,7 @@ public interface Path
      *
      * @since 11
      */
+    @SideEffectFree
     public static Path of(String first, String... more) {
         return FileSystems.getDefault().getPath(first, more);
     }
@@ -191,6 +202,7 @@ public interface Path
      *
      * @since 11
      */
+    @SideEffectFree
     public static Path of(URI uri) {
         String scheme =  uri.getScheme();
         if (scheme == null)
@@ -215,6 +227,7 @@ public interface Path
      *
      * @return  the file system that created this object
      */
+    @Pure
     FileSystem getFileSystem();
 
     /**
@@ -225,6 +238,7 @@ public interface Path
      *
      * @return  {@code true} if, and only if, this path is absolute
      */
+    @Pure
     boolean isAbsolute();
 
     /**
@@ -234,7 +248,8 @@ public interface Path
      * @return  a path representing the root component of this path,
      *          or {@code null}
      */
-    Path getRoot();
+    @Pure
+    @Nullable Path getRoot();
 
     /**
      * Returns the name of the file or directory denoted by this path as a
@@ -244,7 +259,8 @@ public interface Path
      * @return  a path representing the name of the file or directory, or
      *          {@code null} if this path has zero elements
      */
-    Path getFileName();
+    @Pure
+    @Nullable Path getFileName();
 
     /**
      * Returns the <em>parent path</em>, or {@code null} if this path does not
@@ -269,7 +285,8 @@ public interface Path
      *
      * @return  a path representing the path's parent
      */
-    Path getParent();
+    @Pure
+    @Nullable Path getParent();
 
     /**
      * Returns the number of name elements in the path.
@@ -277,6 +294,7 @@ public interface Path
      * @return  the number of elements in the path, or {@code 0} if this path
      *          only represents a root component
      */
+    @Pure
     int getNameCount();
 
     /**
@@ -297,6 +315,7 @@ public interface Path
      *          equal to the number of elements, or this path has zero name
      *          elements
      */
+    @Pure
     Path getName(int index);
 
     /**
@@ -324,6 +343,7 @@ public interface Path
      *          the number of elements. If {@code endIndex} is less than or
      *          equal to {@code beginIndex}, or larger than the number of elements.
      */
+    @SideEffectFree
     Path subpath(int beginIndex, int endIndex);
 
     /**
@@ -349,6 +369,7 @@ public interface Path
      * @return  {@code true} if this path starts with the given path; otherwise
      *          {@code false}
      */
+    @Pure
     boolean startsWith(Path other);
 
     /**
@@ -373,6 +394,7 @@ public interface Path
      * @throws  InvalidPathException
      *          If the path string cannot be converted to a Path.
      */
+    @Pure
     default boolean startsWith(String other) {
         return startsWith(getFileSystem().getPath(other));
     }
@@ -402,6 +424,7 @@ public interface Path
      * @return  {@code true} if this path ends with the given path; otherwise
      *          {@code false}
      */
+    @Pure
     boolean endsWith(Path other);
 
     /**
@@ -429,6 +452,7 @@ public interface Path
      * @throws  InvalidPathException
      *          If the path string cannot be converted to a Path.
      */
+    @Pure
     default boolean endsWith(String other) {
         return endsWith(getFileSystem().getPath(other));
     }
@@ -458,6 +482,7 @@ public interface Path
      * @see #getParent
      * @see #toRealPath
      */
+    @SideEffectFree
     Path normalize();
 
     // -- resolution and relativization --
@@ -483,6 +508,7 @@ public interface Path
      *
      * @see #relativize
      */
+    @SideEffectFree
     Path resolve(Path other);
 
     /**
@@ -509,6 +535,7 @@ public interface Path
      *
      * @see FileSystem#getPath
      */
+    @SideEffectFree
     default Path resolve(String other) {
         return resolve(getFileSystem().getPath(other));
     }
@@ -624,6 +651,7 @@ public interface Path
      *
      * @see #resolve(Path)
      */
+    @SideEffectFree
     default Path resolveSibling(Path other) {
         if (other == null)
             throw new NullPointerException();
@@ -652,6 +680,7 @@ public interface Path
      *
      * @see FileSystem#getPath
      */
+    @SideEffectFree
     default Path resolveSibling(String other) {
         return resolveSibling(getFileSystem().getPath(other));
     }
@@ -697,6 +726,7 @@ public interface Path
      *          if {@code other} is not a {@code Path} that can be relativized
      *          against this path
      */
+    @SideEffectFree
     Path relativize(Path other);
 
     /**
@@ -745,6 +775,7 @@ public interface Path
      *          a file system, and the URI of the enclosing file system cannot be
      *          obtained
      */
+    @SideEffectFree
     URI toUri();
 
     /**
@@ -764,6 +795,7 @@ public interface Path
      * @throws  java.io.IOError
      *          if an I/O error occurs
      */
+    @SideEffectFree
     Path toAbsolutePath();
 
     /**
@@ -803,6 +835,7 @@ public interface Path
      * @throws  IOException
      *          if the file does not exist or an I/O error occurs
      */
+    @SideEffectFree
     Path toRealPath(LinkOption... options) throws IOException;
 
     /**
@@ -830,6 +863,7 @@ public interface Path
      * @throws  UnsupportedOperationException
      *          if this {@code Path} is not associated with the default provider
      */
+    @SideEffectFree
     default File toFile() {
         if (getFileSystem() == FileSystems.getDefault()) {
             return new File(toString());
@@ -972,18 +1006,23 @@ public interface Path
      *
      * @return  an iterator over the name elements of this path
      */
+    @SideEffectFree
     @Override
     default Iterator<Path> iterator() {
         return new Iterator<>() {
             private int i = 0;
 
             @Override
+            @Pure
+            @EnsuresNonEmptyIf(result = true, expression = "this")
             public boolean hasNext() {
                 return (i < getNameCount());
             }
 
             @Override
-            public Path next() {
+            @SideEffectsOnly("this")
+            @DoesNotUnrefineReceiver("modifiability")
+            public Path next(/*@NonEmpty Iterator<Path> this*/) {
                 if (i < getNameCount()) {
                     Path result = getName(i);
                     i++;
@@ -1016,6 +1055,7 @@ public interface Path
      * @throws  ClassCastException
      *          if the paths are associated with different providers
      */
+    @Pure
     @Override
     int compareTo(Path other);
 
@@ -1041,8 +1081,9 @@ public interface Path
      * @return  {@code true} if, and only if, the given object is a {@code Path}
      *          that is identical to this {@code Path}
      */
+    @Pure
     @Override
-    boolean equals(Object other);
+    boolean equals(@Nullable Object other);
 
     /**
      * Computes a hash code for this path.
@@ -1053,6 +1094,7 @@ public interface Path
      *
      * @return  the hash-code value for this path
      */
+    @Pure
     @Override
     int hashCode();
 
@@ -1066,6 +1108,7 @@ public interface Path
      * <p> The returned path string uses the default name {@link
      * FileSystem#getSeparator separator} to separate names in the path.
      */
+    @SideEffectFree
     @Override
     String toString();
 }

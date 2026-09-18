@@ -25,6 +25,12 @@
 
 package javax.crypto.spec;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import jdk.internal.access.SharedSecrets;
 
 import javax.crypto.SecretKey;
@@ -224,8 +230,10 @@ public class SecretKeySpec implements KeySpec, SecretKey {
      * @return true if the objects are considered equal, false if
      * <code>obj</code> is null or otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj)
             return true;
 

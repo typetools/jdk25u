@@ -25,6 +25,12 @@
 
 package sun.security.jgss;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import org.ietf.jgss.*;
 import sun.security.jgss.spi.*;
 
@@ -476,8 +482,10 @@ public class GSSCredentialImpl implements GSSCredential {
         }
     }
 
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object another) {
+    public boolean equals(@Nullable Object another) {
 
         if (destroyed) {
             throw new IllegalStateException("This credential is " +
@@ -668,7 +676,7 @@ public class GSSCredentialImpl implements GSSCredential {
         public int getUsage() {
             return usage;
         }
-        public boolean equals(Object other) {
+        public boolean equals(@Nullable Object other) {
             if (! (other instanceof SearchKey that))
                 return false;
             return ((this.mechOid.equals(that.mechOid)) &&

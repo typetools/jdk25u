@@ -40,6 +40,8 @@
 
 package sun.util.resources;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Enumeration;
@@ -489,7 +491,7 @@ public abstract class Bundles {
         }
 
         @Override
-        public boolean equals(Object other) {
+        public boolean equals(@Nullable Object other) {
             if (this == other) {
                 return true;
             }
@@ -541,7 +543,7 @@ public abstract class Bundles {
             }
         }
 
-        private Throwable getCause() {
+        private @Nullable Throwable getCause() {
             return cause;
         }
 

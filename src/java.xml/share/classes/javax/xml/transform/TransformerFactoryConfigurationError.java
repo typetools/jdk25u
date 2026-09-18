@@ -25,6 +25,8 @@
 
 package javax.xml.transform;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Thrown when a problem with configuration with the Transformer Factories
  * exists. This error will typically be thrown when the class of a
@@ -59,7 +61,7 @@ public class TransformerFactoryConfigurationError extends Error {
      *
      * @param msg The error message for the exception.
      */
-    public TransformerFactoryConfigurationError(String msg) {
+    public TransformerFactoryConfigurationError(@Nullable String msg) {
 
         super(msg);
 
@@ -88,7 +90,7 @@ public class TransformerFactoryConfigurationError extends Error {
      * TransformerFactoryConfigurationError
      * @param msg The detail message.
      */
-    public TransformerFactoryConfigurationError(Exception e, String msg) {
+    public TransformerFactoryConfigurationError(@Nullable Exception e, @Nullable String msg) {
 
         super(msg);
 
@@ -126,7 +128,7 @@ public class TransformerFactoryConfigurationError extends Error {
      * use the exception chaining mechanism of JDK1.4
     */
     @Override
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return exception;
     }
 }

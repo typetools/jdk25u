@@ -25,6 +25,9 @@
 
 package javax.security.auth.login;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that a credential was not found.
  *
@@ -42,6 +45,7 @@ public class CredentialNotFoundException extends CredentialException {
      * Constructs a CredentialNotFoundException with no detail message.
      * A detail message is a String that describes this particular exception.
      */
+    @SideEffectFree
     public CredentialNotFoundException() {
         super();
     }
@@ -53,7 +57,8 @@ public class CredentialNotFoundException extends CredentialException {
      *
      * @param msg the detail message.
      */
-    public CredentialNotFoundException(String msg) {
+    @SideEffectFree
+    public CredentialNotFoundException(@Nullable String msg) {
         super(msg);
     }
 }

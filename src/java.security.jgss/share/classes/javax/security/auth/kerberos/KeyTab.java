@@ -25,6 +25,12 @@
 
 package javax.security.auth.kerberos;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.File;
 import java.util.Objects;
 import sun.security.krb5.EncryptionKey;
@@ -318,8 +324,10 @@ public final class KeyTab {
      * @param other the object to compare to
      * @return true if the specified object is equal to this {@code KeyTab}
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (other == this)
             return true;
 

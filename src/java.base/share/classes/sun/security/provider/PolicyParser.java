@@ -25,6 +25,9 @@
 
 package sun.security.provider;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -240,6 +243,7 @@ public class PolicyParser {
         }
     }
 
+    @Pure
     private boolean peek(String expect) {
         boolean found = false;
 
@@ -502,7 +506,7 @@ public class PolicyParser {
             i18nMessage = msg;
         }
 
-        public ParsingException(String msg, LocalizedMessage localizedMsg,
+        public ParsingException(@Nullable String msg, LocalizedMessage localizedMsg,
                                 Object[] source) {
             super(msg);
             this.localizedMsg = localizedMsg;

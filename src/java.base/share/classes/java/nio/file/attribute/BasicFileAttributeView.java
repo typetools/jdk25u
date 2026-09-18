@@ -25,6 +25,9 @@
 
 package java.nio.file.attribute;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.io.IOException;
 
 /**
@@ -101,6 +104,7 @@ import java.io.IOException;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public interface BasicFileAttributeView
     extends FileAttributeView
 {
@@ -168,7 +172,7 @@ public interface BasicFileAttributeView
      *
      * @see java.nio.file.Files#setLastModifiedTime
      */
-    void setTimes(FileTime lastModifiedTime,
-                  FileTime lastAccessTime,
-                  FileTime createTime) throws IOException;
+    void setTimes(@Nullable FileTime lastModifiedTime,
+                  @Nullable FileTime lastAccessTime,
+                  @Nullable FileTime createTime) throws IOException;
 }

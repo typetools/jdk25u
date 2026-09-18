@@ -25,6 +25,9 @@
 
 package java.lang.reflect;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown when {@link java.lang.reflect.Executable#getParameters the
  * java.lang.reflect package} attempts to read method parameters from
@@ -60,6 +63,7 @@ public class MalformedParametersException extends RuntimeException {
      * Create a {@code MalformedParametersException} with an empty
      * reason.
      */
+    @SideEffectFree
     public MalformedParametersException() {}
 
     /**
@@ -67,7 +71,8 @@ public class MalformedParametersException extends RuntimeException {
      *
      * @param reason The reason for the exception.
      */
-    public MalformedParametersException(String reason) {
+    @SideEffectFree
+    public MalformedParametersException(@Nullable String reason) {
         super(reason);
     }
 }

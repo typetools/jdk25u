@@ -25,6 +25,9 @@
 
 package java.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This exception may be thrown by methods that have detected concurrent
  * modification of an object when such modification is not permissible.
@@ -75,6 +78,7 @@ public class ConcurrentModificationException extends RuntimeException {
      * Constructs a ConcurrentModificationException with no
      * detail message.
      */
+    @SideEffectFree
     public ConcurrentModificationException() {
     }
 
@@ -84,7 +88,8 @@ public class ConcurrentModificationException extends RuntimeException {
      *
      * @param message the detail message pertaining to this exception.
      */
-    public ConcurrentModificationException(String message) {
+    @SideEffectFree
+    public ConcurrentModificationException(@Nullable String message) {
         super(message);
     }
 
@@ -99,7 +104,8 @@ public class ConcurrentModificationException extends RuntimeException {
      *         unknown.)
      * @since  1.7
      */
-    public ConcurrentModificationException(Throwable cause) {
+    @SideEffectFree
+    public ConcurrentModificationException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -119,7 +125,8 @@ public class ConcurrentModificationException extends RuntimeException {
      *         unknown.)
      * @since 1.7
      */
-    public ConcurrentModificationException(String message, Throwable cause) {
+    @SideEffectFree
+    public ConcurrentModificationException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }

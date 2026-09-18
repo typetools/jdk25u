@@ -25,6 +25,9 @@
 
 package javax.security.auth.login;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that a user account has expired.
  *
@@ -46,6 +49,7 @@ public class AccountExpiredException extends AccountException {
      * Constructs a AccountExpiredException with no detail message. A detail
      * message is a String that describes this particular exception.
      */
+    @SideEffectFree
     public AccountExpiredException() {
         super();
     }
@@ -57,7 +61,8 @@ public class AccountExpiredException extends AccountException {
      *
      * @param msg the detail message.
      */
-    public AccountExpiredException(String msg) {
+    @SideEffectFree
+    public AccountExpiredException(@Nullable String msg) {
         super(msg);
     }
 }

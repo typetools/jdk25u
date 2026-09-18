@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.IOException;
 
 /**
@@ -42,6 +45,7 @@ public class MalformedURLException extends IOException {
     /**
      * Constructs a {@code MalformedURLException} with no detail message.
      */
+    @SideEffectFree
     public MalformedURLException() {
     }
 
@@ -51,7 +55,8 @@ public class MalformedURLException extends IOException {
      *
      * @param   msg   the detail message.
      */
-    public MalformedURLException(String msg) {
+    @SideEffectFree
+    public MalformedURLException(@Nullable String msg) {
         super(msg);
     }
 }

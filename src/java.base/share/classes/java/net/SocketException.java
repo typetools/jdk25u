@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.IOException;
 
 /**
@@ -43,13 +46,15 @@ public class SocketException extends IOException {
      *
      * @param msg the detail message.
      */
-    public SocketException(String msg) {
+    @SideEffectFree
+    public SocketException(@Nullable String msg) {
         super(msg);
     }
 
     /**
      * Constructs a new {@code SocketException} with no detail message.
      */
+    @SideEffectFree
     public SocketException() {
     }
 
@@ -61,7 +66,8 @@ public class SocketException extends IOException {
      * @param cause the cause
      * @since 19
      */
-    public SocketException(String msg, Throwable cause) {
+    @SideEffectFree
+    public SocketException(@Nullable String msg, @Nullable Throwable cause) {
         super(msg, cause);
     }
 
@@ -72,7 +78,8 @@ public class SocketException extends IOException {
      * @param cause the cause
      * @since 19
      */
-    public SocketException(Throwable cause) {
+    @SideEffectFree
+    public SocketException(@Nullable Throwable cause) {
         super(cause);
     }
 }

@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This is the generic KeyStore exception.
  *
@@ -44,6 +47,7 @@ public class KeyStoreException extends GeneralSecurityException {
      * detail message is a {@code String} that describes this particular
      * exception.)
      */
+    @SideEffectFree
     public KeyStoreException() {
         super();
     }
@@ -55,7 +59,8 @@ public class KeyStoreException extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-   public KeyStoreException(String msg) {
+    @SideEffectFree
+   public KeyStoreException(@Nullable String msg) {
        super(msg);
     }
 
@@ -70,7 +75,8 @@ public class KeyStoreException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public KeyStoreException(String message, Throwable cause) {
+    @SideEffectFree
+    public KeyStoreException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -85,7 +91,8 @@ public class KeyStoreException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public KeyStoreException(Throwable cause) {
+    @SideEffectFree
+    public KeyStoreException(@Nullable Throwable cause) {
         super(cause);
     }
 }

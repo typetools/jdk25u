@@ -25,6 +25,10 @@
 
 package javax.crypto;
 
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -326,6 +330,7 @@ final class CryptoPolicyParser {
         return false;
     }
 
+    @Pure
     private boolean peek(String expect) {
         boolean found = false;
 
@@ -628,7 +633,7 @@ final class CryptoPolicyParser {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj == this)
                 return true;
 
@@ -664,7 +669,7 @@ final class CryptoPolicyParser {
          * detail message.
          * @param msg the detail message.
          */
-        ParsingException(String msg) {
+        ParsingException(@Nullable String msg) {
             super(msg);
         }
 

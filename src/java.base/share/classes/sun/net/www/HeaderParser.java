@@ -25,6 +25,10 @@
 
 package sun.net.www;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.OptionalInt;
@@ -201,12 +205,16 @@ public class HeaderParser {
         ParserIterator (boolean returnValue) {
             returnsValue = returnValue;
         }
+        @Pure
         public boolean hasNext () {
             return index<nkeys;
         }
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public String next () {
             return tab[index++][returnsValue?1:0];
         }
+        @DoesNotUnrefineReceiver("modifiability")
         public void remove () {
             throw new UnsupportedOperationException ("remove not supported");
         }

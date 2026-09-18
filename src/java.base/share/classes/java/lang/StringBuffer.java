@@ -25,6 +25,19 @@
 
 package java.lang;
 
+import org.checkerframework.checker.index.qual.GTENegativeOne;
+import org.checkerframework.checker.index.qual.IndexOrHigh;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.common.aliasing.qual.LeakedToResult;
+import org.checkerframework.common.aliasing.qual.NonLeaked;
+import org.checkerframework.common.aliasing.qual.Unique;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -109,6 +122,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
  * @see     java.lang.String
  * @since   1.0
  */
+@AnnotatedFor({"aliasing", "lock", "nullness", "index"})
  public final class StringBuffer
     extends AbstractStringBuilder
     implements Appendable, Serializable, Comparable<StringBuffer>, CharSequence
@@ -129,7 +143,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * initial capacity of 16 characters.
      */
     @IntrinsicCandidate
-    public StringBuffer() {
+    public @Unique StringBuffer() {
         super(16);
     }
 
@@ -142,7 +156,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      *             argument is less than {@code 0}.
      */
     @IntrinsicCandidate
-    public StringBuffer(int capacity) {
+    public @Unique StringBuffer(@NonNegative int capacity) {
         super(capacity);
     }
 
@@ -154,7 +168,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @param   str   the initial contents of the buffer.
      */
     @IntrinsicCandidate
-    public StringBuffer(String str) {
+    public @Unique StringBuffer(String str) {
         super(str);
     }
 
@@ -167,7 +181,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @param      seq   the sequence to copy.
      * @since 1.5
      */
-    public StringBuffer(CharSequence seq) {
+    public @Unique StringBuffer(CharSequence seq) {
         super(seq);
     }
 
@@ -195,18 +209,21 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      *
      * @since 11
      */
+    @SideEffectFree
     @Override
     public synchronized int compareTo(StringBuffer another) {
         return super.compareTo(another);
     }
 
+    @Pure
     @Override
-    public synchronized int length() {
+    public synchronized @NonNegative int length(@GuardSatisfied StringBuffer this) {
         return count;
     }
 
+    @Pure
     @Override
-    public synchronized int capacity() {
+    public synchronized @NonNegative int capacity() {
         return super.capacity();
     }
 
@@ -229,7 +246,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @see        #length()
      */
     @Override
-    public synchronized void setLength(int newLength) {
+    public synchronized void setLength(@NonNegative int newLength) {
         toStringCache = null;
         super.setLength(newLength);
     }
@@ -238,6 +255,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @see        #length()
      */
+    @Pure
     @Override
     public synchronized char charAt(int index) {
         return super.charAt(index);
@@ -247,6 +265,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @since      1.5
      */
+    @Pure
     @Override
     public synchronized int codePointAt(int index) {
         return super.codePointAt(index);
@@ -256,6 +275,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @since     1.5
      */
+    @Pure
     @Override
     public synchronized int codePointBefore(int index) {
         return super.codePointBefore(index);
@@ -265,6 +285,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @since     1.5
      */
+    @Pure
     @Override
     public synchronized int codePointCount(int beginIndex, int endIndex) {
         return super.codePointCount(beginIndex, endIndex);
@@ -274,14 +295,16 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @since     1.5
      */
+    @Pure
     @Override
     public synchronized int offsetByCodePoints(int index, int codePointOffset) {
         return super.offsetByCodePoints(index, codePointOffset);
     }
 
+    @SideEffectsOnly("#3")
     @Override
     public synchronized void getChars(int srcBegin, int srcEnd, char[] dst,
-                                      int dstBegin)
+                                      @IndexOrHigh({"#3"}) int dstBegin)
     {
         super.getChars(srcBegin, srcEnd, dst, dstBegin);
     }
@@ -297,7 +320,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
     }
 
     @Override
-    public synchronized StringBuffer append(Object obj) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked @Nullable Object obj) {
         toStringCache = null;
         super.append(String.valueOf(obj));
         return this;
@@ -305,7 +328,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
 
     @Override
     @IntrinsicCandidate
-    public synchronized StringBuffer append(String str) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked @Nullable String str) {
         toStringCache = null;
         super.append(str);
         return this;
@@ -335,7 +358,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @return  a reference to this object.
      * @since 1.4
      */
-    public synchronized StringBuffer append(StringBuffer sb) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked @Nullable StringBuffer sb) {
         toStringCache = null;
         super.append(sb);
         return this;
@@ -345,7 +368,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @since 1.8
      */
     @Override
-    synchronized StringBuffer append(AbstractStringBuilder asb) {
+    synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked AbstractStringBuilder asb) {
         toStringCache = null;
         super.append(asb);
         return this;
@@ -373,7 +396,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @since 1.5
      */
     @Override
-    public synchronized StringBuffer append(CharSequence s) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked @Nullable CharSequence s) {
         toStringCache = null;
         super.append(s);
         return this;
@@ -384,7 +407,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @since      1.5
      */
     @Override
-    public synchronized StringBuffer append(CharSequence s, int start, int end)
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked @Nullable CharSequence s, @IndexOrHigh({"#1"}) int start, @IndexOrHigh({"#1"}) int end)
     {
         toStringCache = null;
         super.append(s, start, end);
@@ -392,7 +415,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
     }
 
     @Override
-    public synchronized StringBuffer append(char[] str) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked char[] str) {
         toStringCache = null;
         super.append(str);
         return this;
@@ -402,14 +425,14 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     @Override
-    public synchronized StringBuffer append(char[] str, int offset, int len) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked char[] str, @IndexOrHigh({"#1"}) int offset, @IndexOrHigh({"#1"}) int len) {
         toStringCache = null;
         super.append(str, offset, len);
         return this;
     }
 
     @Override
-    public synchronized StringBuffer append(boolean b) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked boolean b) {
         toStringCache = null;
         super.append(b);
         return this;
@@ -417,7 +440,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
 
     @Override
     @IntrinsicCandidate
-    public synchronized StringBuffer append(char c) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked char c) {
         toStringCache = null;
         super.append(c);
         return this;
@@ -425,7 +448,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
 
     @Override
     @IntrinsicCandidate
-    public synchronized StringBuffer append(int i) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked int i) {
         toStringCache = null;
         super.append(i);
         return this;
@@ -442,21 +465,21 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
     }
 
     @Override
-    public synchronized StringBuffer append(long lng) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked long lng) {
         toStringCache = null;
         super.append(lng);
         return this;
     }
 
     @Override
-    public synchronized StringBuffer append(float f) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked float f) {
         toStringCache = null;
         super.append(f);
         return this;
     }
 
     @Override
-    public synchronized StringBuffer append(double d) {
+    public synchronized StringBuffer append(@LeakedToResult StringBuffer this, @NonLeaked double d) {
         toStringCache = null;
         super.append(d);
         return this;
@@ -499,6 +522,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws StringIndexOutOfBoundsException {@inheritDoc}
      * @since      1.2
      */
+    @SideEffectFree
     @Override
     public synchronized String substring(int start) {
         return substring(start, count);
@@ -508,6 +532,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @since      1.4
      */
+    @SideEffectFree
     @Override
     public synchronized CharSequence subSequence(int start, int end) {
         return super.substring(start, end);
@@ -517,6 +542,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws StringIndexOutOfBoundsException {@inheritDoc}
      * @since      1.2
      */
+    @SideEffectFree
     @Override
     public synchronized String substring(int start, int end) {
         return super.substring(start, end);
@@ -527,8 +553,8 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @since      1.2
      */
     @Override
-    public synchronized StringBuffer insert(int index, char[] str, int offset,
-                                            int len)
+    public synchronized StringBuffer insert(int index, char[] str, @IndexOrHigh({"#2"}) int offset,
+                                            @IndexOrHigh({"#2"}) int len)
     {
         toStringCache = null;
         super.insert(index, str, offset, len);
@@ -539,7 +565,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws StringIndexOutOfBoundsException {@inheritDoc}
      */
     @Override
-    public synchronized StringBuffer insert(int offset, Object obj) {
+    public synchronized StringBuffer insert(int offset, @Nullable Object obj) {
         toStringCache = null;
         super.insert(offset, String.valueOf(obj));
         return this;
@@ -549,7 +575,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @throws StringIndexOutOfBoundsException {@inheritDoc}
      */
     @Override
-    public synchronized StringBuffer insert(int offset, String str) {
+    public synchronized StringBuffer insert(int offset, @Nullable String str) {
         toStringCache = null;
         super.insert(offset, str);
         return this;
@@ -570,7 +596,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @since      1.5
      */
     @Override
-    public StringBuffer insert(int dstOffset, CharSequence s) {
+    public StringBuffer insert(int dstOffset, @Nullable CharSequence s) {
         // Note, synchronization achieved via invocations of other StringBuffer methods
         // after narrowing of s to specific type
         // Ditto for toStringCache clearing
@@ -583,8 +609,8 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      * @since      1.5
      */
     @Override
-    public synchronized StringBuffer insert(int dstOffset, CharSequence s,
-            int start, int end)
+    public synchronized StringBuffer insert(int dstOffset, @Nullable CharSequence s,
+            @IndexOrHigh({"#2"}) int start, @IndexOrHigh({"#2"}) int end)
     {
         toStringCache = null;
         super.insert(dstOffset, s, start, end);
@@ -664,8 +690,9 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
     /**
      * @since      1.4
      */
+    @Pure
     @Override
-    public int indexOf(String str) {
+    public @GTENegativeOne int indexOf(@GuardSatisfied StringBuffer this, String str) {
         // Note, synchronization achieved via invocations of other StringBuffer methods
         return super.indexOf(str);
     }
@@ -673,16 +700,18 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
     /**
      * @since      1.4
      */
+    @Pure
     @Override
-    public synchronized int indexOf(String str, int fromIndex) {
+    public synchronized @GTENegativeOne int indexOf(@GuardSatisfied StringBuffer this, String str, int fromIndex) {
         return super.indexOf(str, fromIndex);
     }
 
     /**
      * @since      1.4
      */
+    @Pure
     @Override
-    public int lastIndexOf(String str) {
+    public @GTENegativeOne int lastIndexOf(@GuardSatisfied StringBuffer this, String str) {
         // Note, synchronization achieved via invocations of other StringBuffer methods
         return lastIndexOf(str, count);
     }
@@ -690,8 +719,9 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
     /**
      * @since      1.4
      */
+    @Pure
     @Override
-    public synchronized int lastIndexOf(String str, int fromIndex) {
+    public synchronized @GTENegativeOne int lastIndexOf(@GuardSatisfied StringBuffer this, String str, int fromIndex) {
         return super.lastIndexOf(str, fromIndex);
     }
 
@@ -710,6 +740,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
      *
      * @since 21
      */
+    @SideEffectFree
     @Override
     public synchronized StringBuffer repeat(int codePoint, int count) {
         toStringCache = null;
@@ -729,9 +760,10 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
         return this;
     }
 
+    @SideEffectFree
     @Override
     @IntrinsicCandidate
-    public synchronized String toString() {
+    public synchronized String toString(@GuardSatisfied StringBuffer this) {
         if (length() == 0) {
             return "";
         }

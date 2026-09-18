@@ -25,6 +25,9 @@
 
 package java.lang.module;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown by a {@link ModuleFinder ModuleFinder} when an error occurs finding
  * a module. Also thrown by {@link
@@ -42,6 +45,7 @@ public class FindException extends RuntimeException {
     /**
      * Constructs a {@code FindException} with no detail message.
      */
+    @SideEffectFree
     public FindException() {
     }
 
@@ -52,7 +56,8 @@ public class FindException extends RuntimeException {
      * @param msg
      *        The detail message; can be {@code null}
      */
-    public FindException(String msg) {
+    @SideEffectFree
+    public FindException(@Nullable String msg) {
         super(msg);
     }
 
@@ -62,7 +67,8 @@ public class FindException extends RuntimeException {
      * @param cause
      *        The cause; can be {@code null}
      */
-    public FindException(Throwable cause) {
+    @SideEffectFree
+    public FindException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -75,7 +81,8 @@ public class FindException extends RuntimeException {
      * @param cause
      *        The cause; can be {@code null}
      */
-    public FindException(String msg, Throwable cause) {
+    @SideEffectFree
+    public FindException(@Nullable String msg, @Nullable Throwable cause) {
         super(msg, cause);
     }
 }

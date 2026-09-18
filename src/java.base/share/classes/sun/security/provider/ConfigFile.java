@@ -25,6 +25,8 @@
 
 package sun.security.provider;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -547,6 +549,7 @@ public final class ConfigFile extends Configuration {
             return value;
         }
 
+        @Pure
         private boolean peek(String expect) {
             switch (lookahead) {
                 case ',':

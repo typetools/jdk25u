@@ -28,6 +28,8 @@
 
 package sun.nio.cs.ext;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -62,6 +64,7 @@ public class ISO2022_CN
         return "ISO2022CN";
     }
 
+    @Pure
     public boolean contains(Charset cs) {
         return ((cs instanceof EUC_CN)     // GB2312-80 repertoire
                 || (cs instanceof US_ASCII)

@@ -25,6 +25,12 @@
 
 package java.text;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.util.*;
 import java.text.AttributedCharacterIterator.Attribute;
 
@@ -753,7 +759,7 @@ public class AttributedString {
         // Object methods. See documentation in that class.
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -1075,8 +1081,10 @@ class AttributeEntry implements Map.Entry<Attribute,Object> {
         this.value = value;
     }
 
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o instanceof AttributeEntry other
                 && other.key.equals(key) && Objects.equals(other.value, value);
     }

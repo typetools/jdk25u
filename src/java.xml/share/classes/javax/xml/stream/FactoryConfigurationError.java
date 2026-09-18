@@ -26,6 +26,8 @@
 
 package javax.xml.stream;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * An error class for reporting factory configuration errors.
  *
@@ -39,7 +41,7 @@ public class FactoryConfigurationError extends Error {
   /**
    * @serial The nested exception.
    */
-  Exception nested;
+  @Nullable Exception nested;
 
   /**
    * Default constructor
@@ -51,7 +53,7 @@ public class FactoryConfigurationError extends Error {
    *
    * @param e the exception to nest
    */
-  public FactoryConfigurationError(java.lang.Exception e){
+  public FactoryConfigurationError(java.lang.@Nullable Exception e){
     nested = e;
   }
 
@@ -62,7 +64,7 @@ public class FactoryConfigurationError extends Error {
    * @param e the exception to nest
    * @param msg the message to report
    */
-  public FactoryConfigurationError(java.lang.Exception e, java.lang.String msg){
+  public FactoryConfigurationError(java.lang.@Nullable Exception e, java.lang.@Nullable String msg){
     super(msg);
     nested = e;
   }
@@ -74,7 +76,7 @@ public class FactoryConfigurationError extends Error {
    * @param msg the message to report
    * @param e the exception to nest
    */
-  public FactoryConfigurationError(java.lang.String msg, java.lang.Exception e){
+  public FactoryConfigurationError(java.lang.@Nullable String msg, java.lang.@Nullable Exception e){
     super(msg);
     nested = e;
   }
@@ -84,7 +86,7 @@ public class FactoryConfigurationError extends Error {
    *
    * @param msg the message to report
    */
-  public FactoryConfigurationError(java.lang.String msg) {
+  public FactoryConfigurationError(java.lang.@Nullable String msg) {
     super(msg);
   }
 
@@ -93,14 +95,14 @@ public class FactoryConfigurationError extends Error {
    *
    * @return the nested exception or null
    */
-  public Exception getException() {
+  public @Nullable Exception getException() {
     return nested;
   }
     /**
      * use the exception chaining mechanism of JDK1.4
     */
     @Override
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return nested;
     }
 
@@ -109,7 +111,7 @@ public class FactoryConfigurationError extends Error {
    *
    * @return the string value of the message
    */
-  public String getMessage() {
+  public @Nullable String getMessage() {
     String msg = super.getMessage();
     if(msg != null)
       return msg;

@@ -24,6 +24,10 @@
  */
 package javax.swing.plaf.nimbus;
 
+import org.checkerframework.checker.interning.qual.Interned;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import javax.swing.Painter;
 
 import javax.swing.JComponent;
@@ -117,14 +121,15 @@ import java.util.TreeMap;
  * @author Richard Bair
  * @author Jasper Potts
  */
+@AnnotatedFor({"interning"})
 public final class NimbusStyle extends SynthStyle {
     /* Keys and scales for large/small/mini components, based on Apples sizes */
     /** Large key */
-    public static final String LARGE_KEY = "large";
+    public static final @Interned String LARGE_KEY = "large";
     /** Small key */
-    public static final String SMALL_KEY = "small";
+    public static final @Interned String SMALL_KEY = "small";
     /** Mini key */
-    public static final String MINI_KEY = "mini";
+    public static final @Interned String MINI_KEY = "mini";
     /** Large scale */
     public static final double LARGE_SCALE = 1.15;
     /** Small scale */
@@ -1102,7 +1107,7 @@ public final class NimbusStyle extends SynthStyle {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             final CacheKey other = (CacheKey) obj;
             if (obj == null) return false;
             if (this.xstate != other.xstate) return false;

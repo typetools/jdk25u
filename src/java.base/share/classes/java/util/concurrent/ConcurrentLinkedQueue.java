@@ -35,6 +35,24 @@
 
 package java.util.concurrent;
 
+import org.checkerframework.checker.index.qual.CanShrink;
+import org.checkerframework.checker.index.qual.PolyGrowShrink;
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nonempty.qual.PolyNonEmpty;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.PolyNull;
+import org.checkerframework.checker.signedness.qual.PolySigned;
+import org.checkerframework.checker.signedness.qual.UnknownSignedness;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.AbstractQueue;
@@ -106,7 +124,8 @@ import java.util.function.Predicate;
  * @author Doug Lea
  * @param <E> the type of elements held in this queue
  */
-public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
+@AnnotatedFor({"nullness"})
+public class ConcurrentLinkedQueue<E extends @NonNull Object> extends AbstractQueue<E>
         implements Queue<E>, java.io.Serializable {
     private static final long serialVersionUID = 196745693267521676L;
 
@@ -183,7 +202,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
 
     static final class Node<E> {
         volatile E item;
-        volatile Node<E> next;
+        volatile @Nullable Node<E> next;
 
         /**
          * Constructs a node holding item.  Uses relaxed write because
@@ -279,6 +298,9 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @return {@code true} (as specified by {@link Collection#add})
      * @throws NullPointerException if the specified element is null
      */
+    @EnsuresNonEmpty("this")
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean add(E e) {
         return offer(e);
     }
@@ -329,7 +351,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @param q p.next: the next live node, or null if at end
      * @return either old pred or p if pred dead or CAS failed
      */
-    private Node<E> skipDeadNodes(Node<E> pred, Node<E> c, Node<E> p, Node<E> q) {
+    private Node<E> skipDeadNodes(@Nullable Node<E> pred, Node<E> c, Node<E> p, @Nullable Node<E> q) {
         // assert pred != c;
         // assert p != q;
         // assert c.item == null;
@@ -351,6 +373,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @return {@code true} (as specified by {@link Queue#offer})
      * @throws NullPointerException if the specified element is null
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean offer(E e) {
         final Node<E> newNode = new Node<E>(Objects.requireNonNull(e));
 
@@ -380,7 +404,9 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
         }
     }
 
-    public E poll() {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public @Nullable E poll(@GuardSatisfied @CanShrink ConcurrentLinkedQueue<E> this) {
         restartFromHead: for (;;) {
             for (Node<E> h = head, p = h, q;; p = q) {
                 final E item;
@@ -401,7 +427,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
         }
     }
 
-    public E peek() {
+    @Pure
+    public @Nullable E peek() {
         restartFromHead: for (;;) {
             for (Node<E> h = head, p = h, q;; p = q) {
                 final E item;
@@ -424,7 +451,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * and the need to add a retry loop to deal with the possibility
      * of losing a race to a concurrent poll().
      */
-    Node<E> first() {
+    @Nullable Node<E> first() {
         restartFromHead: for (;;) {
             for (Node<E> h = head, p = h, q;; p = q) {
                 boolean hasItem = (p.item != null);
@@ -443,6 +470,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      *
      * @return {@code true} if this queue contains no elements
      */
+    @Pure
+    @EnsuresNonEmptyIf(result = false, expression = "this")
     public boolean isEmpty() {
         return first() == null;
     }
@@ -463,6 +492,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      *
      * @return the number of elements in this queue
      */
+    @Pure
     public int size() {
         restartFromHead: for (;;) {
             int count = 0;
@@ -485,7 +515,9 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @param o object to be checked for containment in this queue
      * @return {@code true} if this queue contains the specified element
      */
-    public boolean contains(Object o) {
+    @Pure
+    @EnsuresNonEmptyIf(result = true, expression = "this")
+    public boolean contains(@GuardSatisfied @UnknownSignedness Object o) {
         if (o == null) return false;
         restartFromHead: for (;;) {
             for (Node<E> p = head, pred = null; p != null; ) {
@@ -518,7 +550,9 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @param o element to be removed from this queue, if present
      * @return {@code true} if this queue changed as a result of the call
      */
-    public boolean remove(Object o) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean remove(@CanShrink ConcurrentLinkedQueue<E> this, @GuardSatisfied @UnknownSignedness Object o) {
         if (o == null) return false;
         restartFromHead: for (;;) {
             for (Node<E> p = head, pred = null; p != null; ) {
@@ -554,6 +588,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      *         of its elements are null
      * @throws IllegalArgumentException if the collection is this queue
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean addAll(Collection<? extends E> c) {
         if (c == this)
             // As historically specified in AbstractQueue#addAll
@@ -602,6 +638,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
         }
     }
 
+    @SideEffectFree
     public String toString() {
         String[] a = null;
         restartFromHead: for (;;) {
@@ -671,7 +708,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      *
      * @return an array containing all of the elements in this queue
      */
-    public Object[] toArray() {
+    @SideEffectFree
+    public @PolyNull @PolySigned Object[] toArray(ConcurrentLinkedQueue<@PolyNull @PolySigned E> this) {
         return toArrayInternal(null);
     }
 
@@ -711,7 +749,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @throws NullPointerException if the specified array is null
      */
     @SuppressWarnings("unchecked")
-    public <T> T[] toArray(T[] a) {
+    public <T> @Nullable T[] toArray(@PolyNull T[] a) {
         Objects.requireNonNull(a);
         return (T[]) toArrayInternal(a);
     }
@@ -725,7 +763,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      *
      * @return an iterator over the elements in this queue in proper sequence
      */
-    public Iterator<E> iterator() {
+    @SideEffectFree
+    public @PolyGrowShrink @PolyNonEmpty Iterator<E> iterator(@PolyGrowShrink @PolyNonEmpty ConcurrentLinkedQueue<E> this) {
         return new Itr();
     }
 
@@ -733,7 +772,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
         /**
          * Next node to return item for.
          */
-        private Node<E> nextNode;
+        private @Nullable Node<E> nextNode;
 
         /**
          * nextItem holds on to item fields because once we claim
@@ -768,11 +807,15 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
             }
         }
 
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
         public boolean hasNext() {
             return nextItem != null;
         }
 
-        public E next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public E next(@NonEmpty Itr this) {
             final Node<E> pred = nextNode;
             if (pred == null) throw new NoSuchElementException();
             // assert nextItem != null;
@@ -794,6 +837,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
 
         // Default implementation of forEachRemaining is "good enough".
 
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public void remove() {
             Node<E> l = lastRet;
             if (l == null) throw new IllegalStateException();
@@ -862,7 +907,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
         int batch;          // batch size for splits
         boolean exhausted;  // true when no more nodes
 
-        public Spliterator<E> trySplit() {
+        public @Nullable Spliterator<E> trySplit() {
             Node<E> p, q;
             if ((p = current()) == null || (q = p.next) == null)
                 return null;
@@ -951,6 +996,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @return a {@code Spliterator} over the elements in this queue
      * @since 1.8
      */
+    @SideEffectFree
     @Override
     public Spliterator<E> spliterator() {
         return new CLQSpliterator();
@@ -959,7 +1005,9 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
     /**
      * @throws NullPointerException {@inheritDoc}
      */
-    public boolean removeIf(Predicate<? super E> filter) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean removeIf(@CanShrink ConcurrentLinkedQueue<E> this, Predicate<? super E> filter) {
         Objects.requireNonNull(filter);
         return bulkRemove(filter);
     }
@@ -967,7 +1015,9 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
     /**
      * @throws NullPointerException {@inheritDoc}
      */
-    public boolean removeAll(Collection<?> c) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean removeAll(@CanShrink ConcurrentLinkedQueue<E> this, Collection<? extends @NonNull @UnknownSignedness Object> c) {
         Objects.requireNonNull(c);
         return bulkRemove(e -> c.contains(e));
     }
@@ -975,12 +1025,16 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
     /**
      * @throws NullPointerException {@inheritDoc}
      */
-    public boolean retainAll(Collection<?> c) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean retainAll(@GuardSatisfied @CanShrink ConcurrentLinkedQueue<E> this, Collection<? extends @NonNull @UnknownSignedness Object> c) {
         Objects.requireNonNull(c);
         return bulkRemove(e -> !c.contains(e));
     }
 
-    public void clear() {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public void clear(@GuardSatisfied @CanShrink ConcurrentLinkedQueue<E> this) {
         bulkRemove(e -> true);
     }
 

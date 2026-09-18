@@ -35,6 +35,25 @@
 
 package java.util.concurrent;
 
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.EnsuresKeyFor;
+import org.checkerframework.checker.nullness.qual.EnsuresKeyForIf;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.KeyFor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.PolyNull;
+import org.checkerframework.checker.signedness.qual.PolySigned;
+import org.checkerframework.checker.signedness.qual.UnknownSignedness;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -263,7 +282,8 @@ import jdk.internal.vm.annotation.Stable;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
-public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
+@AnnotatedFor({"nullness"})
+public class ConcurrentHashMap<K extends @NonNull Object,V extends @NonNull Object> extends AbstractMap<K,V>
     implements ConcurrentMap<K,V>, Serializable {
     private static final long serialVersionUID = 7249069246763182397L;
 
@@ -650,17 +670,24 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             this.next = next;
         }
 
+        @Pure
         public final K getKey()     { return key; }
+        @Pure
         public final V getValue()   { return val; }
+        @Pure
         public final int hashCode() { return key.hashCode() ^ val.hashCode(); }
+        @SideEffectFree
         public final String toString() {
             return Helpers.mapEntryToString(key, val);
         }
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public final V setValue(V value) {
             throw new UnsupportedOperationException();
         }
 
-        public final boolean equals(Object o) {
+        @Pure
+        public final boolean equals(@Nullable Object o) {
             Object k, v, u; Map.Entry<?,?> e;
             return ((o instanceof Map.Entry) &&
                     (k = (e = (Map.Entry<?,?>)o).getKey()) != null &&
@@ -721,7 +748,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * Returns x's Class if it is of the form "class C implements
      * Comparable<C>", else null.
      */
-    static Class<?> comparableClassFor(Object x) {
+    static @Nullable Class<?> comparableClassFor(Object x) {
         if (x instanceof Comparable) {
             Class<?> c; Type[] ts, as; ParameterizedType p;
             if ((c = x.getClass()) == String.class) // bypass checks
@@ -918,6 +945,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /**
      * {@inheritDoc}
      */
+    @Pure
     public int size() {
         long n = sumCount();
         return ((n < 0L) ? 0 :
@@ -928,6 +956,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /**
      * {@inheritDoc}
      */
+    @Pure
+    @EnsuresNonEmptyIf(result = false, expression = "this")
     public boolean isEmpty() {
         return sumCount() <= 0L; // ignore transient negative values
     }
@@ -943,7 +973,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *
      * @throws NullPointerException if the specified key is null
      */
-    public V get(Object key) {
+    @Pure
+    public @Nullable V get(@UnknownSignedness @GuardSatisfied Object key) {
         Node<K,V>[] tab; Node<K,V> e, p; int n, eh; K ek;
         int h = spread(key.hashCode());
         if ((tab = table) != null && (n = tab.length) > 0 &&
@@ -972,7 +1003,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *         {@code equals} method; {@code false} otherwise
      * @throws NullPointerException if the specified key is null
      */
-    public boolean containsKey(Object key) {
+    @Pure
+    @EnsuresKeyForIf(expression={"#1"}, result=true, map={"this"})
+    public boolean containsKey(@GuardSatisfied @UnknownSignedness Object key) {
         return get(key) != null;
     }
 
@@ -986,7 +1019,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *         specified value
      * @throws NullPointerException if the specified value is null
      */
-    public boolean containsValue(Object value) {
+    @Pure
+    public boolean containsValue(@GuardSatisfied @UnknownSignedness Object value) {
         if (value == null)
             throw new NullPointerException();
         Node<K,V>[] t;
@@ -1014,12 +1048,15 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *         {@code null} if there was no mapping for {@code key}
      * @throws NullPointerException if the specified key or value is null
      */
-    public V put(K key, V value) {
+    @EnsuresKeyFor(value={"#1"}, map={"this"})
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public @Nullable V put(K key, V value) {
         return putVal(key, value, false);
     }
 
     /** Implementation for put and putIfAbsent */
-    final V putVal(K key, V value, boolean onlyIfAbsent) {
+    final @Nullable V putVal(K key, V value, boolean onlyIfAbsent) {
         if (key == null || value == null) throw new NullPointerException();
         int hash = spread(key.hashCode());
         int binCount = 0;
@@ -1095,6 +1132,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *
      * @param m mappings to be stored in this map
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public void putAll(Map<? extends K, ? extends V> m) {
         if (table != null) {
             tryPresize(size() + m.size());
@@ -1112,7 +1151,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *         {@code null} if there was no mapping for {@code key}
      * @throws NullPointerException if the specified key is null
      */
-    public V remove(Object key) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public @Nullable V remove(@GuardSatisfied @UnknownSignedness Object key) {
         return replaceNode(key, null, null);
     }
 
@@ -1121,7 +1162,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * Replaces node value with v, conditional upon match of cv if
      * non-null.  If resulting value is null, delete.
      */
-    final V replaceNode(Object key, V value, Object cv) {
+    final @Nullable V replaceNode(Object key, @Nullable V value, @Nullable Object cv) {
         int hash = spread(key.hashCode());
         for (Node<K,V>[] tab = table;;) {
             Node<K,V> f; int n, i, fh;
@@ -1197,6 +1238,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /**
      * Removes all of the mappings from this map.
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public void clear() {
         long delta = 0L; // negative number of deletions
         int i = 0;
@@ -1247,7 +1290,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *
      * @return the set view
      */
-    public KeySetView<K,V> keySet() {
+    @SideEffectFree
+    public KeySetView<@KeyFor({"this"}) K,V> keySet() {
         KeySetView<K,V> ks;
         if ((ks = keySet) != null) return ks;
         return keySet = new KeySetView<K,V>(this, null);
@@ -1271,6 +1315,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *
      * @return the collection view
      */
+    @SideEffectFree
     public Collection<V> values() {
         ValuesView<K,V> vs;
         if ((vs = values) != null) return vs;
@@ -1294,7 +1339,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *
      * @return the set view
      */
-    public Set<Map.Entry<K,V>> entrySet() {
+    @SideEffectFree
+    public Set<Map.Entry<@KeyFor({"this"}) K,V>> entrySet() {
         EntrySetView<K,V> es;
         if ((es = entrySet) != null) return es;
         return entrySet = new EntrySetView<K,V>(this);
@@ -1307,6 +1353,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *
      * @return the hash code value for this map
      */
+    @Pure
     public int hashCode() {
         int h = 0;
         Node<K,V>[] t;
@@ -1329,6 +1376,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *
      * @return a string representation of this map
      */
+    @SideEffectFree
     public String toString() {
         Node<K,V>[] t;
         int f = (t = table) == null ? 0 : t.length;
@@ -1361,7 +1409,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @param o object to be compared for equality with this map
      * @return {@code true} if the specified object is equal to this map
      */
-    public boolean equals(Object o) {
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
+    public boolean equals(@Nullable Object o) {
         if (o != this) {
             if (!(o instanceof Map))
                 return false;
@@ -1551,7 +1601,10 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *         or {@code null} if there was no mapping for the key
      * @throws NullPointerException if the specified key or value is null
      */
-    public V putIfAbsent(K key, V value) {
+    @EnsuresKeyFor(value={"#1"}, map={"this"})
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public @Nullable V putIfAbsent(K key, V value) {
         return putVal(key, value, true);
     }
 
@@ -1561,7 +1614,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @throws NullPointerException if the specified key is null
      * @return {@inheritDoc ConcurrentMap}
      */
-    public boolean remove(Object key, Object value) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public boolean remove(@GuardSatisfied @UnknownSignedness Object key, @GuardSatisfied @UnknownSignedness Object value) {
         if (key == null)
             throw new NullPointerException();
         return value != null && replaceNode(key, null, value) != null;
@@ -1573,6 +1628,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @throws NullPointerException if any of the arguments are null
      * @return {@inheritDoc ConcurrentMap}
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean replace(K key, V oldValue, V newValue) {
         if (key == null || oldValue == null || newValue == null)
             throw new NullPointerException();
@@ -1586,7 +1643,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *         or {@code null} if there was no mapping for the key
      * @throws NullPointerException if the specified key or value is null
      */
-    public V replace(K key, V value) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    public @Nullable V replace(K key, V value) {
         if (key == null || value == null)
             throw new NullPointerException();
         return replaceNode(key, value, null);
@@ -1605,11 +1664,13 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @return the mapping for the key, if present; else the default value
      * @throws NullPointerException if the specified key is null
      */
-    public V getOrDefault(Object key, V defaultValue) {
+    @Pure
+    public V getOrDefault(@GuardSatisfied @UnknownSignedness Object key, V defaultValue) {
         V v;
         return (v = get(key)) == null ? defaultValue : v;
     }
 
+    @DoesNotUnrefineReceiver("modifiability")
     public void forEach(BiConsumer<? super K, ? super V> action) {
         if (action == null) throw new NullPointerException();
         Node<K,V>[] t;
@@ -1621,6 +1682,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         }
     }
 
+    @DoesNotUnrefineReceiver("modifiability")
     public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
         if (function == null) throw new NullPointerException();
         Node<K,V>[] t;
@@ -1704,7 +1766,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @throws RuntimeException or Error if the mappingFunction does so,
      *         in which case the mapping is left unestablished
      */
-    public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    public @PolyNull V computeIfAbsent(K key, Function<? super K, ? extends @PolyNull V> mappingFunction) {
         if (key == null || mappingFunction == null)
             throw new NullPointerException();
         int h = spread(key.hashCode());
@@ -1816,7 +1879,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @throws RuntimeException or Error if the remappingFunction does so,
      *         in which case the mapping is unchanged
      */
-    public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    public @Nullable V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends @Nullable V> remappingFunction) {
         if (key == null || remappingFunction == null)
             throw new NullPointerException();
         int h = spread(key.hashCode());
@@ -1910,8 +1974,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @throws RuntimeException or Error if the remappingFunction does so,
      *         in which case the mapping is unchanged
      */
-    public V compute(K key,
-                     BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    public @PolyNull V compute(K key,
+                     BiFunction<? super K, ? super @Nullable V, ? extends @PolyNull V> remappingFunction) {
         if (key == null || remappingFunction == null)
             throw new NullPointerException();
         int h = spread(key.hashCode());
@@ -2039,7 +2104,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @throws RuntimeException or Error if the remappingFunction does so,
      *         in which case the mapping is unchanged
      */
-    public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    public @PolyNull V merge(K key, @NonNull V value, BiFunction<? super V, ? super V, ? extends @PolyNull V> remappingFunction) {
         if (key == null || value == null || remappingFunction == null)
             throw new NullPointerException();
         int h = spread(key.hashCode());
@@ -2147,7 +2213,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      *         {@code false} otherwise
      * @throws NullPointerException if the specified value is null
      */
-    public boolean contains(Object value) {
+    @Pure
+    @EnsuresNonEmptyIf(result = true, expression = "this")
+    public boolean contains(@GuardSatisfied @UnknownSignedness Object value) {
         return containsValue(value);
     }
 
@@ -2157,7 +2225,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @return an enumeration of the keys in this table
      * @see #keySet()
      */
-    public Enumeration<K> keys() {
+    @SideEffectFree
+    public Enumeration<@KeyFor({"this"}) K> keys() {
         Node<K,V>[] t;
         int f = (t = table) == null ? 0 : t.length;
         return new KeyIterator<K,V>(t, f, 0, f, this);
@@ -2169,6 +2238,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @return an enumeration of the values in this table
      * @see #values()
      */
+    @SideEffectFree
     public Enumeration<V> elements() {
         Node<K,V>[] t;
         int f = (t = table) == null ? 0 : t.length;
@@ -2233,6 +2303,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @return the set view
      * @throws NullPointerException if the mappedValue is null
      */
+    @SideEffectFree
     public KeySetView<K,V> keySet(V mappedValue) {
         if (mappedValue == null)
             throw new NullPointerException();
@@ -2746,7 +2817,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * Returns the TreeNode (or null if not found) for the given key
          * starting at given root.
          */
-        final TreeNode<K,V> findTreeNode(int h, Object k, Class<?> kc) {
+        final @Nullable TreeNode<K,V> findTreeNode(int h, @Nullable Object k, @Nullable Class<?> kc) {
             if (k != null) {
                 TreeNode<K,V> p = this;
                 do {
@@ -2901,7 +2972,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * using tree comparisons from root, but continues linear
          * search when lock not available.
          */
-        final Node<K,V> find(int h, Object k) {
+        final @Nullable Node<K,V> find(int h, @Nullable Object k) {
             if (k != null) {
                 for (Node<K,V> e = first; e != null; ) {
                     int s; K ek;
@@ -2934,7 +3005,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * Finds or adds a node.
          * @return null if added
          */
-        final TreeNode<K,V> putTreeVal(int h, K k, V v) {
+        final @Nullable TreeNode<K,V> putTreeVal(int h, K k, V v) {
             Class<?> kc = null;
             boolean searched = false;
             for (TreeNode<K,V> p = root;;) {
@@ -3451,9 +3522,13 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             advance();
         }
 
+        @Pure
         public final boolean hasNext() { return next != null; }
+        @Pure
         public final boolean hasMoreElements() { return next != null; }
 
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public final void remove() {
             Node<K,V> p;
             if ((p = lastReturned) == null)
@@ -3470,7 +3545,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             super(tab, size, index, limit, map);
         }
 
-        public final K next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public final K next(@NonEmpty KeyIterator<K,V> this) {
             Node<K,V> p;
             if ((p = next) == null)
                 throw new NoSuchElementException();
@@ -3480,7 +3557,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return k;
         }
 
-        public final K nextElement() { return next(); }
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public final K nextElement(@NonEmpty KeyIterator<K,V> this) { return next(); }
     }
 
     static final class ValueIterator<K,V> extends BaseIterator<K,V>
@@ -3490,7 +3569,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             super(tab, size, index, limit, map);
         }
 
-        public final V next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public final V next(@NonEmpty ValueIterator<K,V> this) {
             Node<K,V> p;
             if ((p = next) == null)
                 throw new NoSuchElementException();
@@ -3500,7 +3581,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return v;
         }
 
-        public final V nextElement() { return next(); }
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public final V nextElement(@NonEmpty ValueIterator<K,V> this) { return next(); }
     }
 
     static final class EntryIterator<K,V> extends BaseIterator<K,V>
@@ -3510,7 +3593,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             super(tab, size, index, limit, map);
         }
 
-        public final Map.Entry<K,V> next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public final Map.Entry<K,V> next(@NonEmpty EntryIterator<K,V> this) {
             Node<K,V> p;
             if ((p = next) == null)
                 throw new NoSuchElementException();
@@ -3534,14 +3619,19 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             this.val = val;
             this.map = map;
         }
+        @Pure
         public K getKey()        { return key; }
+        @Pure
         public V getValue()      { return val; }
+        @Pure
         public int hashCode()    { return key.hashCode() ^ val.hashCode(); }
+        @SideEffectFree
         public String toString() {
             return Helpers.mapEntryToString(key, val);
         }
 
-        public boolean equals(Object o) {
+        @Pure
+        public boolean equals(@Nullable Object o) {
             Object k, v; Map.Entry<?,?> e;
             return ((o instanceof Map.Entry) &&
                     (k = (e = (Map.Entry<?,?>)o).getKey()) != null &&
@@ -3558,6 +3648,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * could even have been removed, in which case the put will
          * re-establish). We do not and cannot guarantee more.
          */
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public V setValue(V value) {
             if (value == null) throw new NullPointerException();
             V v = val;
@@ -3576,7 +3668,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             this.est = est;
         }
 
-        public KeySpliterator<K,V> trySplit() {
+        public @Nullable KeySpliterator<K,V> trySplit() {
             int i, f, h;
             return (h = ((i = baseIndex) + (f = baseLimit)) >>> 1) <= i ? null :
                 new KeySpliterator<K,V>(tab, baseSize, baseLimit = h,
@@ -3615,7 +3707,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             this.est = est;
         }
 
-        public ValueSpliterator<K,V> trySplit() {
+        public @Nullable ValueSpliterator<K,V> trySplit() {
             int i, f, h;
             return (h = ((i = baseIndex) + (f = baseLimit)) >>> 1) <= i ? null :
                 new ValueSpliterator<K,V>(tab, baseSize, baseLimit = h,
@@ -3655,7 +3747,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             this.est = est;
         }
 
-        public EntrySpliterator<K,V> trySplit() {
+        public @Nullable EntrySpliterator<K,V> trySplit() {
             int i, f, h;
             return (h = ((i = baseIndex) + (f = baseLimit)) >>> 1) <= i ? null :
                 new EntrySpliterator<K,V>(tab, baseSize, baseLimit = h,
@@ -3733,7 +3825,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @since 1.8
      */
     public <U> void forEach(long parallelismThreshold,
-                            BiFunction<? super K, ? super V, ? extends U> transformer,
+                            BiFunction<? super K, ? super V, ? extends @Nullable U> transformer,
                             Consumer<? super U> action) {
         if (transformer == null || action == null)
             throw new NullPointerException();
@@ -3758,8 +3850,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * function on each (key, value), or null if none
      * @since 1.8
      */
-    public <U> U search(long parallelismThreshold,
-                        BiFunction<? super K, ? super V, ? extends U> searchFunction) {
+    public <U> @Nullable U search(long parallelismThreshold,
+                        BiFunction<? super K, ? super V, ? extends @Nullable U> searchFunction) {
         if (searchFunction == null) throw new NullPointerException();
         return new SearchMappingsTask<K,V,U>
             (null, batchFor(parallelismThreshold), 0, 0, table,
@@ -3782,8 +3874,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * of all (key, value) pairs
      * @since 1.8
      */
-    public <U> U reduce(long parallelismThreshold,
-                        BiFunction<? super K, ? super V, ? extends U> transformer,
+    public <U> @Nullable U reduce(long parallelismThreshold,
+                        BiFunction<? super K, ? super V, ? extends @Nullable U> transformer,
                         BiFunction<? super U, ? super U, ? extends U> reducer) {
         if (transformer == null || reducer == null)
             throw new NullPointerException();
@@ -3900,7 +3992,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @since 1.8
      */
     public <U> void forEachKey(long parallelismThreshold,
-                               Function<? super K, ? extends U> transformer,
+                               Function<? super K, ? extends @Nullable U> transformer,
                                Consumer<? super U> action) {
         if (transformer == null || action == null)
             throw new NullPointerException();
@@ -3925,8 +4017,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * function on each key, or null if none
      * @since 1.8
      */
-    public <U> U searchKeys(long parallelismThreshold,
-                            Function<? super K, ? extends U> searchFunction) {
+    public <U> @Nullable U searchKeys(long parallelismThreshold,
+                            Function<? super K, ? extends @Nullable U> searchFunction) {
         if (searchFunction == null) throw new NullPointerException();
         return new SearchKeysTask<K,V,U>
             (null, batchFor(parallelismThreshold), 0, 0, table,
@@ -3944,7 +4036,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * reducer to combine values, or null if none
      * @since 1.8
      */
-    public K reduceKeys(long parallelismThreshold,
+    public @Nullable K reduceKeys(long parallelismThreshold,
                         BiFunction<? super K, ? super K, ? extends K> reducer) {
         if (reducer == null) throw new NullPointerException();
         return new ReduceKeysTask<K,V>
@@ -3968,8 +4060,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * of all keys
      * @since 1.8
      */
-    public <U> U reduceKeys(long parallelismThreshold,
-                            Function<? super K, ? extends U> transformer,
+    public <U> @Nullable U reduceKeys(long parallelismThreshold,
+                            Function<? super K, ? extends @Nullable U> transformer,
          BiFunction<? super U, ? super U, ? extends U> reducer) {
         if (transformer == null || reducer == null)
             throw new NullPointerException();
@@ -4087,7 +4179,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @since 1.8
      */
     public <U> void forEachValue(long parallelismThreshold,
-                                 Function<? super V, ? extends U> transformer,
+                                 Function<? super V, ? extends @Nullable U> transformer,
                                  Consumer<? super U> action) {
         if (transformer == null || action == null)
             throw new NullPointerException();
@@ -4112,8 +4204,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * function on each value, or null if none
      * @since 1.8
      */
-    public <U> U searchValues(long parallelismThreshold,
-                              Function<? super V, ? extends U> searchFunction) {
+    public <U> @Nullable U searchValues(long parallelismThreshold,
+                              Function<? super V, ? extends @Nullable U> searchFunction) {
         if (searchFunction == null) throw new NullPointerException();
         return new SearchValuesTask<K,V,U>
             (null, batchFor(parallelismThreshold), 0, 0, table,
@@ -4130,7 +4222,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @return the result of accumulating all values
      * @since 1.8
      */
-    public V reduceValues(long parallelismThreshold,
+    public @Nullable V reduceValues(long parallelismThreshold,
                           BiFunction<? super V, ? super V, ? extends V> reducer) {
         if (reducer == null) throw new NullPointerException();
         return new ReduceValuesTask<K,V>
@@ -4154,8 +4246,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * of all values
      * @since 1.8
      */
-    public <U> U reduceValues(long parallelismThreshold,
-                              Function<? super V, ? extends U> transformer,
+    public <U> @Nullable U reduceValues(long parallelismThreshold,
+                              Function<? super V, ? extends @Nullable U> transformer,
                               BiFunction<? super U, ? super U, ? extends U> reducer) {
         if (transformer == null || reducer == null)
             throw new NullPointerException();
@@ -4271,7 +4363,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @since 1.8
      */
     public <U> void forEachEntry(long parallelismThreshold,
-                                 Function<Map.Entry<K,V>, ? extends U> transformer,
+                                 Function<Map.Entry<K,V>, ? extends @Nullable U> transformer,
                                  Consumer<? super U> action) {
         if (transformer == null || action == null)
             throw new NullPointerException();
@@ -4296,8 +4388,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * function on each entry, or null if none
      * @since 1.8
      */
-    public <U> U searchEntries(long parallelismThreshold,
-                               Function<Map.Entry<K,V>, ? extends U> searchFunction) {
+    public <U> @Nullable U searchEntries(long parallelismThreshold,
+                               Function<Map.Entry<K,V>, ? extends @Nullable U> searchFunction) {
         if (searchFunction == null) throw new NullPointerException();
         return new SearchEntriesTask<K,V,U>
             (null, batchFor(parallelismThreshold), 0, 0, table,
@@ -4314,7 +4406,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @return the result of accumulating all entries
      * @since 1.8
      */
-    public Map.Entry<K,V> reduceEntries(long parallelismThreshold,
+    public Map.@Nullable Entry<K,V> reduceEntries(long parallelismThreshold,
                                         BiFunction<Map.Entry<K,V>, Map.Entry<K,V>, ? extends Map.Entry<K,V>> reducer) {
         if (reducer == null) throw new NullPointerException();
         return new ReduceEntriesTask<K,V>
@@ -4338,8 +4430,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * of all entries
      * @since 1.8
      */
-    public <U> U reduceEntries(long parallelismThreshold,
-                               Function<Map.Entry<K,V>, ? extends U> transformer,
+    public <U> @Nullable U reduceEntries(long parallelismThreshold,
+                               Function<Map.Entry<K,V>, ? extends @Nullable U> transformer,
                                BiFunction<? super U, ? super U, ? extends U> reducer) {
         if (transformer == null || reducer == null)
             throw new NullPointerException();
@@ -4449,8 +4541,13 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * Removes all of the elements from this view, by removing all
          * the mappings from the map backing this view.
          */
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public final void clear()      { map.clear(); }
+        @Pure
         public final int size()        { return map.size(); }
+        @Pure
+        @EnsuresNonEmptyIf(result = false, expression = "this")
         public final boolean isEmpty() { return map.isEmpty(); }
 
         // implementations below rely on concrete classes supplying these
@@ -4463,13 +4560,19 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          *
          * @return an iterator over the elements in this collection
          */
+        @SideEffectFree
         public abstract Iterator<E> iterator();
-        public abstract boolean contains(Object o);
-        public abstract boolean remove(Object o);
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
+        public abstract boolean contains(@UnknownSignedness Object o);
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public abstract boolean remove(@UnknownSignedness Object o);
 
         private static final String OOME_MSG = "Required array size too large";
 
-        public final Object[] toArray() {
+        @SideEffectFree
+        public final @PolyNull @PolySigned Object[] toArray(CollectionView<K,V,@PolyNull @PolySigned E> this) {
             long sz = map.mappingCount();
             if (sz > MAX_ARRAY_SIZE)
                 throw new OutOfMemoryError(OOME_MSG);
@@ -4492,7 +4595,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         }
 
         @SuppressWarnings("unchecked")
-        public final <T> T[] toArray(T[] a) {
+        public final <T> @Nullable T[] toArray(@PolyNull T[] a) {
             long sz = map.mappingCount();
             if (sz > MAX_ARRAY_SIZE)
                 throw new OutOfMemoryError(OOME_MSG);
@@ -4532,6 +4635,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          *
          * @return a string representation of this collection
          */
+        @SideEffectFree
         public final String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append('[');
@@ -4548,7 +4652,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return sb.append(']').toString();
         }
 
-        public final boolean containsAll(Collection<?> c) {
+        @Pure
+        public final boolean containsAll(Collection<? extends @NonNull @UnknownSignedness Object> c) {
             if (c != this) {
                 for (Object e : c) {
                     if (e == null || !contains(e))
@@ -4558,7 +4663,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return true;
         }
 
-        public boolean removeAll(Collection<?> c) {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public boolean removeAll(Collection<? extends @NonNull @UnknownSignedness Object> c) {
             if (c == null) throw new NullPointerException();
             boolean modified = false;
             // Use (c instanceof Set) as a hint that lookup in c is as
@@ -4580,7 +4687,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return modified;
         }
 
-        public final boolean retainAll(Collection<?> c) {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public final boolean retainAll(Collection<? extends @NonNull @UnknownSignedness Object> c) {
             if (c == null) throw new NullPointerException();
             boolean modified = false;
             for (Iterator<E> it = iterator(); it.hasNext();) {
@@ -4613,8 +4722,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         private static final long serialVersionUID = 7249069246763182397L;
         /** @serial */
         @SuppressWarnings("serial") // Conditionally serializable
-        private final V value;
-        KeySetView(ConcurrentHashMap<K,V> map, V value) {  // non-public
+        private final @Nullable V value;
+        KeySetView(ConcurrentHashMap<K,V> map, @Nullable V value) {  // non-public
             super(map);
             this.value = value;
         }
@@ -4626,13 +4735,15 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * @return the default mapped value for additions, or {@code null}
          * if not supported
          */
-        public V getMappedValue() { return value; }
+        public @Nullable V getMappedValue() { return value; }
 
         /**
          * {@inheritDoc}
          * @throws NullPointerException if the specified key is null
          */
-        public boolean contains(Object o) { return map.containsKey(o); }
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
+        public boolean contains(@UnknownSignedness Object o) { return map.containsKey(o); }
 
         /**
          * Removes the key from this map view, by removing the key (and its
@@ -4643,11 +4754,14 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * @return {@code true} if the backing map contained the specified key
          * @throws NullPointerException if the specified key is null
          */
-        public boolean remove(Object o) { return map.remove(o) != null; }
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public boolean remove(@UnknownSignedness Object o) { return map.remove(o) != null; }
 
         /**
          * @return an iterator over the keys of the backing map
          */
+        @SideEffectFree
         public Iterator<K> iterator() {
             Node<K,V>[] t;
             ConcurrentHashMap<K,V> m = map;
@@ -4665,6 +4779,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * @throws UnsupportedOperationException if no default mapped value
          * for additions was provided
          */
+        @EnsuresNonEmpty("this")
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public boolean add(K e) {
             V v;
             if ((v = value) == null)
@@ -4683,6 +4800,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * @throws UnsupportedOperationException if no default mapped value
          * for additions was provided
          */
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public boolean addAll(Collection<? extends K> c) {
             boolean added = false;
             V v;
@@ -4695,6 +4814,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return added;
         }
 
+        @Pure
         public int hashCode() {
             int h = 0;
             for (K e : this)
@@ -4702,13 +4822,15 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return h;
         }
 
-        public boolean equals(Object o) {
+        @Pure
+        public boolean equals(@Nullable Object o) {
             Set<?> c;
             return ((o instanceof Set) &&
                     ((c = (Set<?>)o) == this ||
                      (containsAll(c) && c.containsAll(this))));
         }
 
+        @SideEffectFree
         public Spliterator<K> spliterator() {
             Node<K,V>[] t;
             ConcurrentHashMap<K,V> m = map;
@@ -4737,11 +4859,15 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         implements Collection<V>, java.io.Serializable {
         private static final long serialVersionUID = 2249069246763182397L;
         ValuesView(ConcurrentHashMap<K,V> map) { super(map); }
-        public final boolean contains(Object o) {
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
+        public final boolean contains(@UnknownSignedness Object o) {
             return map.containsValue(o);
         }
 
-        public final boolean remove(Object o) {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public final boolean remove(@UnknownSignedness Object o) {
             if (o != null) {
                 for (Iterator<V> it = iterator(); it.hasNext();) {
                     if (o.equals(it.next())) {
@@ -4753,6 +4879,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return false;
         }
 
+        @SideEffectFree
         public final Iterator<V> iterator() {
             ConcurrentHashMap<K,V> m = map;
             Node<K,V>[] t;
@@ -4760,14 +4887,19 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return new ValueIterator<K,V>(t, f, 0, f, m);
         }
 
+        @EnsuresNonEmpty("this")
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public final boolean add(V e) {
             throw new UnsupportedOperationException();
         }
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public final boolean addAll(Collection<? extends V> c) {
             throw new UnsupportedOperationException();
         }
 
-        @Override public boolean removeAll(Collection<?> c) {
+        @Override public boolean removeAll(Collection<? extends @NonNull @UnknownSignedness Object> c) {
             if (c == null) throw new NullPointerException();
             boolean modified = false;
             for (Iterator<V> it = iterator(); it.hasNext();) {
@@ -4779,10 +4911,13 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return modified;
         }
 
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public boolean removeIf(Predicate<? super V> filter) {
             return map.removeValueIf(filter);
         }
 
+        @SideEffectFree
         public Spliterator<V> spliterator() {
             Node<K,V>[] t;
             ConcurrentHashMap<K,V> m = map;
@@ -4812,7 +4947,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         private static final long serialVersionUID = 2249069246763182397L;
         EntrySetView(ConcurrentHashMap<K,V> map) { super(map); }
 
-        public boolean contains(Object o) {
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
+        public boolean contains(@UnknownSignedness Object o) {
             Object k, v, r; Map.Entry<?,?> e;
             return ((o instanceof Map.Entry) &&
                     (k = (e = (Map.Entry<?,?>)o).getKey()) != null &&
@@ -4821,7 +4958,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                     (v == r || v.equals(r)));
         }
 
-        public boolean remove(Object o) {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public boolean remove(@UnknownSignedness Object o) {
             Object k, v; Map.Entry<?,?> e;
             return ((o instanceof Map.Entry) &&
                     (k = (e = (Map.Entry<?,?>)o).getKey()) != null &&
@@ -4832,6 +4971,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         /**
          * @return an iterator over the entries of the backing map
          */
+        @SideEffectFree
         public Iterator<Map.Entry<K,V>> iterator() {
             ConcurrentHashMap<K,V> m = map;
             Node<K,V>[] t;
@@ -4839,10 +4979,15 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return new EntryIterator<K,V>(t, f, 0, f, m);
         }
 
+        @EnsuresNonEmpty("this")
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public boolean add(Entry<K,V> e) {
             return map.putVal(e.getKey(), e.getValue(), false) == null;
         }
 
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public boolean addAll(Collection<? extends Entry<K,V>> c) {
             boolean added = false;
             for (Entry<K,V> e : c) {
@@ -4852,10 +4997,13 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return added;
         }
 
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public boolean removeIf(Predicate<? super Entry<K,V>> filter) {
             return map.removeEntryIf(filter);
         }
 
+        @Pure
         public final int hashCode() {
             int h = 0;
             Node<K,V>[] t;
@@ -4868,13 +5016,15 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             return h;
         }
 
-        public final boolean equals(Object o) {
+        @Pure
+        public final boolean equals(@Nullable Object o) {
             Set<?> c;
             return ((o instanceof Set) &&
                     ((c = (Set<?>)o) == this ||
                      (containsAll(c) && c.containsAll(this))));
         }
 
+        @SideEffectFree
         public Spliterator<Map.Entry<K,V>> spliterator() {
             Node<K,V>[] t;
             ConcurrentHashMap<K,V> m = map;

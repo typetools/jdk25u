@@ -25,6 +25,8 @@
 
 package jdk.javadoc.internal.doclets.formats.html.taglets;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.util.List;
 import java.util.Set;
 

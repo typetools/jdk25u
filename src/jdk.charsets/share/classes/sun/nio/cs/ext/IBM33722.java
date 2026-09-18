@@ -28,6 +28,8 @@
 
 package sun.nio.cs.ext;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.nio.CharBuffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -50,6 +52,7 @@ public class IBM33722
         return "Cp33722";
     }
 
+    @Pure
     public boolean contains(Charset cs) {
         return (cs instanceof IBM33722);
     }

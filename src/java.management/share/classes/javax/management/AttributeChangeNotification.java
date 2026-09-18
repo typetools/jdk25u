@@ -25,7 +25,8 @@
 
 package javax.management;
 
-
+import org.checkerframework.checker.interning.qual.Interned;
+import org.checkerframework.framework.qual.AnnotatedFor;
 
 /**
  * Provides definitions of the attribute change notifications sent by MBeans.
@@ -49,6 +50,7 @@ package javax.management;
  *
  * @since 1.5
  */
+@AnnotatedFor({"interning"})
 public class AttributeChangeNotification extends javax.management.Notification {
 
     /* Serial version */
@@ -58,7 +60,7 @@ public class AttributeChangeNotification extends javax.management.Notification {
      * Notification type which indicates that the observed MBean attribute value has changed.
      * <BR>The value of this type string is <CODE>jmx.attribute.change</CODE>.
      */
-    public static final String ATTRIBUTE_CHANGE = "jmx.attribute.change";
+    public static final @Interned String ATTRIBUTE_CHANGE = "jmx.attribute.change";
 
 
     /**

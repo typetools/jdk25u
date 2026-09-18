@@ -35,6 +35,16 @@
 
 package java.util.concurrent;
 
+import org.checkerframework.checker.nullness.qual.EnsuresKeyFor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.PolyNull;
+import org.checkerframework.checker.signedness.qual.UnknownSignedness;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -68,7 +78,8 @@ import java.util.function.Function;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
-public interface ConcurrentMap<K,V> extends Map<K,V> {
+@AnnotatedFor({"nullness"})
+public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Object> extends Map<K,V> {
 
     /**
      * {@inheritDoc}
@@ -83,6 +94,7 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @since 1.8
      */
     @Override
+    @Pure
     default V getOrDefault(Object key, V defaultValue) {
         V v;
         return ((v = get(key)) != null) ? v : defaultValue;
@@ -107,6 +119,7 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @since 1.8
      */
     @Override
+    @DoesNotUnrefineReceiver("modifiability")
     default void forEach(BiConsumer<? super K, ? super V> action) {
         Objects.requireNonNull(action);
         for (Map.Entry<K,V> entry : entrySet()) {
@@ -154,7 +167,10 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    V putIfAbsent(K key, V value);
+    @EnsuresKeyFor(value={"#1"}, map={"this"})
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    @Nullable V putIfAbsent(K key, V value);
 
     /**
      * Removes the entry for a key only if currently mapped to a given value.
@@ -185,7 +201,9 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      *         and this map does not permit null keys or values
      * (<a href="{@docRoot}/java.base/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    boolean remove(Object key, Object value);
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    boolean remove(@UnknownSignedness Object key, @UnknownSignedness Object value);
 
     /**
      * Replaces the entry for a key only if currently mapped to a given value.
@@ -217,6 +235,8 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @throws IllegalArgumentException if some property of a specified key
      *         or value prevents it from being stored in this map
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     boolean replace(K key, V oldValue, V newValue);
 
     /**
@@ -249,7 +269,9 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    V replace(K key, V value);
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    @Nullable V replace(K key, V value);
 
     /**
      * {@inheritDoc}
@@ -282,6 +304,7 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @since 1.8
      */
     @Override
+    @DoesNotUnrefineReceiver("modifiability")
     default void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
         Objects.requireNonNull(function);
         forEach((k,v) -> {
@@ -322,8 +345,9 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @since 1.8
      */
     @Override
-    default V computeIfAbsent(K key,
-            Function<? super K, ? extends V> mappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    default @PolyNull V computeIfAbsent(K key,
+            Function<? super K, ? extends @PolyNull V> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
         V oldValue, newValue;
         return ((oldValue = get(key)) == null
@@ -364,8 +388,9 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @since 1.8
      */
     @Override
-    default V computeIfPresent(K key,
-            BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    default @Nullable V computeIfPresent(K key,
+            BiFunction<? super K, ? super V, ? extends @Nullable V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         for (V oldValue; (oldValue = get(key)) != null; ) {
             V newValue = remappingFunction.apply(key, oldValue);
@@ -412,8 +437,9 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @since 1.8
      */
     @Override
-    default V compute(K key,
-                      BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    default @PolyNull V compute(K key,
+                      BiFunction<? super K, ? super @Nullable V, ? extends @PolyNull V> remappingFunction) {
         retry: for (;;) {
             V oldValue = get(key);
             // if putIfAbsent fails, opportunistically use its return value
@@ -472,8 +498,9 @@ public interface ConcurrentMap<K,V> extends Map<K,V> {
      * @since 1.8
      */
     @Override
-    default V merge(K key, V value,
-            BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+    @DoesNotUnrefineReceiver("modifiability")
+    default @PolyNull V merge(K key, @NonNull V value,
+            BiFunction<? super V, ? super V, ? extends @PolyNull V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         Objects.requireNonNull(value);
         retry: for (;;) {

@@ -25,6 +25,10 @@
 
 package java.lang.invoke;
 
+import org.checkerframework.checker.interning.qual.UsesObjectEquals;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import jdk.internal.access.JavaLangInvokeAccess;
 import jdk.internal.access.SharedSecrets;
 import jdk.internal.constant.ClassOrInterfaceDescImpl;
@@ -74,7 +78,8 @@ import static java.lang.invoke.MethodHandles.Lookup.IMPL_LOOKUP;
  * @author jrose
  */
 /*non-public*/
-abstract class MethodHandleImpl {
+@AnnotatedFor({"interning"})
+abstract @UsesObjectEquals class MethodHandleImpl {
 
     /// Factory methods to create method handles:
 
@@ -2147,7 +2152,7 @@ abstract class MethodHandleImpl {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             TableSwitchCacheKey that = (TableSwitchCacheKey) o;

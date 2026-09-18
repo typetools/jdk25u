@@ -25,6 +25,7 @@
 
 package javax.management;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents runtime exceptions thrown by MBean methods in
@@ -62,7 +63,7 @@ public class RuntimeMBeanException extends JMRuntimeException   {
      * @param e the wrapped exception.
      * @param message the detail message.
      */
-    public RuntimeMBeanException(java.lang.RuntimeException e, String message) {
+    public RuntimeMBeanException(java.lang.RuntimeException e, @Nullable String message) {
         super(message) ;
         runtimeException = e ;
     }
@@ -81,7 +82,7 @@ public class RuntimeMBeanException extends JMRuntimeException   {
      *
      * @return the wrapped {@link RuntimeException}.
      */
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return runtimeException;
     }
 }

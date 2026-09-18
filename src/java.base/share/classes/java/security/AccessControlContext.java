@@ -25,6 +25,12 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,8 +151,10 @@ public final class AccessControlContext {
      * and has the same set of {@code ProtectionDomain} objects as this context,
      * {@code false} otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
 

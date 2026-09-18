@@ -24,6 +24,8 @@
  */
 package java.util.stream;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
@@ -694,12 +696,12 @@ final class WhileOps {
         }
 
         @Override
-        public Comparator<? super T> getComparator() {
+        public @Nullable Comparator<? super T> getComparator() {
             return s.getComparator();
         }
 
         @Override
-        public T_SPLITR trySplit() {
+        public @Nullable T_SPLITR trySplit() {
             @SuppressWarnings("unchecked")
             T_SPLITR ls = noSplitting ? null : (T_SPLITR) s.trySplit();
             return ls != null ? makeSpliterator(ls) : null;
@@ -762,7 +764,7 @@ final class WhileOps {
                 }
 
                 @Override
-                public Spliterator<T> trySplit() {
+                public @Nullable Spliterator<T> trySplit() {
                     // Do not split if all operations are cancelled
                     return cancel.get() ? null : super.trySplit();
                 }
@@ -867,7 +869,7 @@ final class WhileOps {
                 }
 
                 @Override
-                public Spliterator.OfInt trySplit() {
+                public Spliterator.@Nullable OfInt trySplit() {
                     // Do not split if all operations are cancelled
                     return cancel.get() ? null : super.trySplit();
                 }
@@ -972,7 +974,7 @@ final class WhileOps {
                 }
 
                 @Override
-                public Spliterator.OfLong trySplit() {
+                public Spliterator.@Nullable OfLong trySplit() {
                     // Do not split if all operations are cancelled
                     return cancel.get() ? null : super.trySplit();
                 }
@@ -1077,7 +1079,7 @@ final class WhileOps {
                 }
 
                 @Override
-                public Spliterator.OfDouble trySplit() {
+                public Spliterator.@Nullable OfDouble trySplit() {
                     // Do not split if all operations are cancelled
                     return cancel.get() ? null : super.trySplit();
                 }

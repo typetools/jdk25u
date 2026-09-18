@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This is the generic Message Digest exception.
  *
@@ -41,6 +44,7 @@ public class DigestException extends GeneralSecurityException {
      * detail message is a {@code String} that describes this particular
      * exception.)
      */
+    @SideEffectFree
     public DigestException() {
         super();
     }
@@ -52,7 +56,8 @@ public class DigestException extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-   public DigestException(String msg) {
+    @SideEffectFree
+   public DigestException(@Nullable String msg) {
        super(msg);
     }
 
@@ -67,7 +72,8 @@ public class DigestException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public DigestException(String message, Throwable cause) {
+    @SideEffectFree
+    public DigestException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -82,7 +88,8 @@ public class DigestException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public DigestException(Throwable cause) {
+    @SideEffectFree
+    public DigestException(@Nullable Throwable cause) {
         super(cause);
     }
 }

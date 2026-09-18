@@ -24,6 +24,12 @@
  */
 package java.security.spec;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.math.BigInteger;
 
 /**
@@ -79,8 +85,10 @@ public class ECFieldFp implements ECField {
      * @return true if {@code obj} is an instance
      * of ECFieldFp and the prime value match, false otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj)  return true;
 
         return obj instanceof ECFieldFp other

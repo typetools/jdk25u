@@ -25,6 +25,9 @@
 
 package java.lang.module;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown when reading a module descriptor and the module descriptor is found
  * to be malformed or otherwise cannot be interpreted as a module descriptor.
@@ -40,6 +43,7 @@ public class InvalidModuleDescriptorException extends RuntimeException {
      * Constructs an {@code InvalidModuleDescriptorException} with no detail
      * message.
      */
+    @SideEffectFree
     public InvalidModuleDescriptorException() {
     }
 
@@ -50,7 +54,8 @@ public class InvalidModuleDescriptorException extends RuntimeException {
      * @param msg
      *        The detail message; can be {@code null}
      */
-    public InvalidModuleDescriptorException(String msg) {
+    @SideEffectFree
+    public InvalidModuleDescriptorException(@Nullable String msg) {
         super(msg);
     }
 }

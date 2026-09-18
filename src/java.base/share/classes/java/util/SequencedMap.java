@@ -25,6 +25,12 @@
 
 package java.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import jdk.internal.util.NullableKeyValueHolder;
 
 /**
@@ -134,6 +140,8 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      *
      * @return a reverse-ordered view of this map
      */
+    @SideEffectFree
+    @DoesNotUnrefineReceiver("modifiability")
     SequencedMap<K, V> reversed();
 
     /**
@@ -148,7 +156,7 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      * @return the first key-value mapping,
      *         or {@code null} if this map is empty
      */
-    default Map.Entry<K,V> firstEntry() {
+    default Map.@Nullable Entry<K,V> firstEntry() {
         var it = entrySet().iterator();
         return it.hasNext() ? new NullableKeyValueHolder<>(it.next()) : null;
     }
@@ -165,7 +173,7 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      * @return the last key-value mapping,
      *         or {@code null} if this map is empty
      */
-    default Map.Entry<K,V> lastEntry() {
+    default Map.@Nullable Entry<K,V> lastEntry() {
         var it = reversed().entrySet().iterator();
         return it.hasNext() ? new NullableKeyValueHolder<>(it.next()) : null;
     }
@@ -184,7 +192,9 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      * @throws UnsupportedOperationException if this collection implementation does not
      *         support this operation
      */
-    default Map.Entry<K,V> pollFirstEntry() {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    default Map.@Nullable Entry<K,V> pollFirstEntry() {
         var it = entrySet().iterator();
         if (it.hasNext()) {
             var entry = new NullableKeyValueHolder<>(it.next());
@@ -209,7 +219,9 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      * @throws UnsupportedOperationException if this collection implementation does not
      *         support this operation
      */
-    default Map.Entry<K,V> pollLastEntry() {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    default Map.@Nullable Entry<K,V> pollLastEntry() {
         var it = reversed().entrySet().iterator();
         if (it.hasNext()) {
             var entry = new NullableKeyValueHolder<>(it.next());
@@ -235,7 +247,9 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      * @throws UnsupportedOperationException if this collection implementation does not
      *         support this operation
      */
-    default V putFirst(K k, V v) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    default @Nullable V putFirst(K k, V v) {
         throw new UnsupportedOperationException();
     }
 
@@ -254,7 +268,9 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      * @throws UnsupportedOperationException if this collection implementation does not
      *         support this operation
      */
-    default V putLast(K k, V v) {
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
+    default @Nullable V putLast(K k, V v) {
         throw new UnsupportedOperationException();
     }
 
@@ -279,17 +295,22 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      *
      * @return a {@code SequencedSet} view of this map's {@code keySet}
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     default SequencedSet<K> sequencedKeySet() {
         class SeqKeySet extends AbstractMap.ViewCollection<K> implements SequencedSet<K> {
             Collection<K> view() {
                 return SequencedMap.this.keySet();
             }
+            @SideEffectFree
             public SequencedSet<K> reversed() {
                 return SequencedMap.this.reversed().sequencedKeySet();
             }
-            public boolean equals(Object other) {
+            @Pure
+            public boolean equals(@Nullable Object other) {
                 return view().equals(other);
             }
+            @Pure
             public int hashCode() {
                 return view().hashCode();
             }
@@ -329,11 +350,14 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      *
      * @return a {@code SequencedCollection} view of this map's {@code values} collection
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     default SequencedCollection<V> sequencedValues() {
         class SeqValues extends AbstractMap.ViewCollection<V> implements SequencedCollection<V> {
             Collection<V> view() {
                 return SequencedMap.this.values();
             }
+            @SideEffectFree
             public SequencedCollection<V> reversed() {
                 return SequencedMap.this.reversed().sequencedValues();
             }
@@ -372,18 +396,23 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      *
      * @return a {@code SequencedSet} view of this map's {@code entrySet}
      */
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     default SequencedSet<Map.Entry<K, V>> sequencedEntrySet() {
         class SeqEntrySet extends AbstractMap.ViewCollection<Map.Entry<K, V>>
                 implements SequencedSet<Map.Entry<K, V>> {
             Collection<Map.Entry<K, V>> view() {
                 return SequencedMap.this.entrySet();
             }
+            @SideEffectFree
             public SequencedSet<Map.Entry<K, V>> reversed() {
                 return SequencedMap.this.reversed().sequencedEntrySet();
             }
-            public boolean equals(Object other) {
+            @Pure
+            public boolean equals(@Nullable Object other) {
                 return view().equals(other);
             }
+            @Pure
             public int hashCode() {
                 return view().hashCode();
             }

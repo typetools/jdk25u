@@ -29,6 +29,10 @@
 
 package sun.net.www;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.ProtocolException;
@@ -213,6 +217,7 @@ public final class MessageHeader {
             key = k;
             this.lock = lock;
         }
+        @Pure
         public boolean hasNext () {
             synchronized (lock) {
                 if (haveNext) {
@@ -229,6 +234,8 @@ public final class MessageHeader {
                 return false;
             }
         }
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
         public String next() {
             synchronized (lock) {
                 if (haveNext) {
@@ -242,6 +249,7 @@ public final class MessageHeader {
                 }
             }
         }
+        @DoesNotUnrefineReceiver("modifiability")
         public void remove () {
             throw new UnsupportedOperationException ("remove not allowed");
         }

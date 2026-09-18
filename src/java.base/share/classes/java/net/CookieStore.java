@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +43,7 @@ import java.util.Map;
  * @author Edward Wang
  * @since 1.6
  */
+@AnnotatedFor("nullness")
 public interface CookieStore {
     /**
      * Adds one HTTP cookie to the store. This is called for every
@@ -64,7 +68,7 @@ public interface CookieStore {
      * @see #get
      *
      */
-    public void add(URI uri, HttpCookie cookie);
+    public void add(@Nullable URI uri, HttpCookie cookie);
 
 
     /**
@@ -117,7 +121,7 @@ public interface CookieStore {
      *
      * @throws NullPointerException if {@code cookie} is {@code null}
      */
-    public boolean remove(URI uri, HttpCookie cookie);
+    public boolean remove(@Nullable URI uri, HttpCookie cookie);
 
 
     /**

@@ -25,6 +25,8 @@
 
 package jdk.internal.module;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.PrintStream;
 import java.lang.module.Configuration;
 import java.lang.module.ModuleReference;
@@ -147,6 +149,7 @@ public class ModuleHashesBuilder {
             return edges.get(u);
         }
 
+        @Pure
         public boolean contains(T u) {
             return nodes.contains(u);
         }

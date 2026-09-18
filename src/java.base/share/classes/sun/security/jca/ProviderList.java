@@ -25,6 +25,9 @@
 
 package sun.security.jca;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+
 import java.util.*;
 
 import java.security.Provider;

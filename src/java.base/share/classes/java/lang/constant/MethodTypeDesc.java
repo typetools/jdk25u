@@ -24,6 +24,9 @@
  */
 package java.lang.constant;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.TypeDescriptor;
@@ -200,7 +203,7 @@ public sealed interface MethodTypeDesc
      * @return the method type descriptor string
      * @jvms 4.3.3 Method Descriptors
      */
-    String descriptorString();
+    @MethodDescriptor String descriptorString();
 
     /**
      * Returns a human-readable descriptor for this method type, using the
@@ -237,5 +240,5 @@ public sealed interface MethodTypeDesc
      * @param o the other object
      * @return whether this descriptor is equal to the other object
      */
-    boolean equals(Object o);
+    boolean equals(@Nullable Object o);
 }

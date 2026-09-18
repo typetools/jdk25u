@@ -25,6 +25,15 @@
 
 package java.io;
 
+import org.checkerframework.checker.index.qual.GTENegativeOne;
+import org.checkerframework.checker.index.qual.IndexOrHigh;
+import org.checkerframework.checker.index.qual.LTEqLengthOf;
+import org.checkerframework.checker.index.qual.LTLengthOf;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.mustcall.qual.MustCallAlias;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import jdk.internal.util.ArraysSupport;
@@ -57,6 +66,7 @@ import sun.nio.ch.FileChannelImpl;
  * @see     java.nio.file.Files#newInputStream
  * @since   1.0
  */
+@AnnotatedFor({"index", "mustcall", "nullness"})
 public class FileInputStream extends InputStream
 {
     private static final int DEFAULT_BUFFER_SIZE = 8192;
@@ -105,6 +115,7 @@ public class FileInputStream extends InputStream
      *             or for some other reason cannot be opened for
      *             reading.
      */
+    @SideEffectFree
     public FileInputStream(String name) throws FileNotFoundException {
         this(name != null ? new File(name) : null);
     }
@@ -129,6 +140,7 @@ public class FileInputStream extends InputStream
      * @see        java.io.File#getPath()
      */
     @SuppressWarnings("this-escape")
+    @SideEffectFree
     public FileInputStream(File file) throws FileNotFoundException {
         if (file.isInvalid()) {
             throw new FileNotFoundException("Invalid file path");
@@ -156,7 +168,7 @@ public class FileInputStream extends InputStream
      * @param      fdObj   the file descriptor to be opened for reading.
      */
     @SuppressWarnings("this-escape")
-    public FileInputStream(FileDescriptor fdObj) {
+    public @MustCallAlias FileInputStream(@MustCallAlias FileDescriptor fdObj) {
         if (fdObj == null) {
             throw new NullPointerException();
         }
@@ -194,7 +206,7 @@ public class FileInputStream extends InputStream
      * @throws     IOException {@inheritDoc}
      */
     @Override
-    public int read() throws IOException {
+    public @GTENegativeOne int read() throws IOException {
         if (jfrTracing && FileReadEvent.enabled()) {
             return traceRead0();
         }
@@ -252,7 +264,7 @@ public class FileInputStream extends InputStream
      * @throws     IOException  if an I/O error occurs.
      */
     @Override
-    public int read(byte[] b) throws IOException {
+    public @GTENegativeOne @LTEqLengthOf({"#1"}) int read(byte[] b) throws IOException {
         if (jfrTracing && FileReadEvent.enabled()) {
             return traceReadBytes(b, 0, b.length);
         }
@@ -274,7 +286,7 @@ public class FileInputStream extends InputStream
      * @throws     IOException  if an I/O error occurs.
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public @GTENegativeOne @LTEqLengthOf({"#1"}) int read(byte[] b, @IndexOrHigh({"#1"}) int off, @LTLengthOf(value={"#1"}, offset={"#2 - 1"}) @NonNegative int len) throws IOException {
         if (jfrTracing && FileReadEvent.enabled()) {
             return traceReadBytes(b, off, len);
         }
@@ -428,7 +440,7 @@ public class FileInputStream extends InputStream
      *             support seek, or if an I/O error occurs.
      */
     @Override
-    public long skip(long n) throws IOException {
+    public @NonNegative long skip(long n) throws IOException {
         if (isRegularFile())
             return skip0(n);
 
@@ -455,7 +467,7 @@ public class FileInputStream extends InputStream
      *             {@code close} or an I/O error occurs.
      */
     @Override
-    public int available() throws IOException {
+    public @NonNegative int available() throws IOException {
         return available0();
     }
 
@@ -519,7 +531,7 @@ public class FileInputStream extends InputStream
      * @throws     IOException  if an I/O error occurs.
      * @see        java.io.FileDescriptor
      */
-    public final FileDescriptor getFD() throws IOException {
+    public final @MustCallAlias FileDescriptor getFD(@MustCallAlias FileInputStream this) throws IOException {
         if (fd != null) {
             return fd;
         }
@@ -541,7 +553,7 @@ public class FileInputStream extends InputStream
      *
      * @since 1.4
      */
-    public FileChannel getChannel() {
+    public @MustCallAlias FileChannel getChannel(@MustCallAlias FileInputStream this) {
         FileChannel fc = this.channel;
         if (fc == null) {
             synchronized (this) {

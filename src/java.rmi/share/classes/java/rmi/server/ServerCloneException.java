@@ -25,6 +25,8 @@
 
 package java.rmi.server;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * A {@code ServerCloneException} is thrown if a remote exception occurs
  * during the cloning of a {@code UnicastRemoteObject}.
@@ -55,7 +57,7 @@ public class ServerCloneException extends CloneNotSupportedException {
      *
      * @serial
      */
-    public Exception detail;
+    public @Nullable Exception detail;
 
     /* indicate compatibility with JDK 1.1.x version of class */
     private static final long serialVersionUID = 6617456357664815945L;
@@ -66,7 +68,7 @@ public class ServerCloneException extends CloneNotSupportedException {
      *
      * @param s the detail message.
      */
-    public ServerCloneException(String s) {
+    public ServerCloneException(@Nullable String s) {
         super(s);
         initCause(null);  // Disallow subsequent initCause
     }
@@ -78,7 +80,7 @@ public class ServerCloneException extends CloneNotSupportedException {
      * @param s the detail message.
      * @param cause the cause
      */
-    public ServerCloneException(String s, Exception cause) {
+    public ServerCloneException(@Nullable String s, @Nullable Exception cause) {
         super(s);
         initCause(null);  // Disallow subsequent initCause
         detail = cause;
@@ -106,7 +108,7 @@ public class ServerCloneException extends CloneNotSupportedException {
      * @return  the cause, which may be {@code null}.
      * @since   1.4
      */
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return detail;
     }
 }

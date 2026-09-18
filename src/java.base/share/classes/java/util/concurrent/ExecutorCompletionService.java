@@ -35,6 +35,10 @@
 
 package java.util.concurrent;
 
+import org.checkerframework.checker.interning.qual.UsesObjectEquals;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.util.Objects;
 
 /**
@@ -104,7 +108,8 @@ import java.util.Objects;
  *
  * @since 1.5
  */
-public class ExecutorCompletionService<V> implements CompletionService<V> {
+@AnnotatedFor({"interning"})
+public @UsesObjectEquals class ExecutorCompletionService<V> implements CompletionService<V> {
     private final Executor executor;
     private final AbstractExecutorService aes;
     private final BlockingQueue<Future<V>> completionQueue;
@@ -203,11 +208,11 @@ public class ExecutorCompletionService<V> implements CompletionService<V> {
         return completionQueue.take();
     }
 
-    public Future<V> poll() {
+    public @Nullable Future<V> poll() {
         return completionQueue.poll();
     }
 
-    public Future<V> poll(long timeout, TimeUnit unit)
+    public @Nullable Future<V> poll(long timeout, TimeUnit unit)
             throws InterruptedException {
         return completionQueue.poll(timeout, unit);
     }

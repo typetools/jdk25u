@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This exception is thrown when a particular security provider is
  * requested but is not available in the environment.
@@ -43,6 +46,7 @@ public class NoSuchProviderException extends GeneralSecurityException {
      * detail message is a {@code String} that describes this particular
      * exception.
      */
+    @SideEffectFree
     public NoSuchProviderException() {
         super();
     }
@@ -54,7 +58,8 @@ public class NoSuchProviderException extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-    public NoSuchProviderException(String msg) {
+    @SideEffectFree
+    public NoSuchProviderException(@Nullable String msg) {
         super(msg);
     }
 }

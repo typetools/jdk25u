@@ -25,12 +25,17 @@
 
 package java.io;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Thrown when a serious I/O error has occurred.
  *
  * @author  Xueming Shen
  * @since   1.6
  */
+@AnnotatedFor({"nullness"})
 public class IOError extends Error {
     /**
      * Constructs a new instance of IOError with the specified cause. The
@@ -42,7 +47,8 @@ public class IOError extends Error {
      *         The cause of this error, or {@code null} if the cause
      *         is not known
      */
-    public IOError(Throwable cause) {
+    @SideEffectFree
+    public IOError(@Nullable Throwable cause) {
         super(cause);
     }
 

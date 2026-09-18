@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * The {@code GeneralSecurityException} class is a generic
  * security exception class that provides type safety for all the
@@ -42,6 +45,7 @@ public class GeneralSecurityException extends Exception {
     /**
      * Constructs a {@code GeneralSecurityException} with no detail message.
      */
+    @SideEffectFree
     public GeneralSecurityException() {
         super();
     }
@@ -54,7 +58,8 @@ public class GeneralSecurityException extends Exception {
      *
      * @param msg the detail message.
      */
-    public GeneralSecurityException(String msg) {
+    @SideEffectFree
+    public GeneralSecurityException(@Nullable String msg) {
         super(msg);
     }
 
@@ -69,7 +74,8 @@ public class GeneralSecurityException extends Exception {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public GeneralSecurityException(String message, Throwable cause) {
+    @SideEffectFree
+    public GeneralSecurityException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -84,7 +90,8 @@ public class GeneralSecurityException extends Exception {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public GeneralSecurityException(Throwable cause) {
+    @SideEffectFree
+    public GeneralSecurityException(@Nullable Throwable cause) {
         super(cause);
     }
 }

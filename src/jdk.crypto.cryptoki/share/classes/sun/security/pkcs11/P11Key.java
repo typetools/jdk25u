@@ -25,6 +25,12 @@
 
 package sun.security.pkcs11;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.*;
 import java.lang.ref.*;
 import java.math.BigInteger;
@@ -179,8 +185,10 @@ abstract class P11Key implements Key, Length {
 
     abstract byte[] getEncodedInternal();
 
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -1101,7 +1109,7 @@ abstract class P11Key implements Key, Length {
             }
             return Objects.hash(x, params.getP(), params.getG());
         }
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (this == obj) return true;
             // equals() should never throw exceptions
             if (!token.isValid()) {
@@ -1186,7 +1194,7 @@ abstract class P11Key implements Key, Length {
             fetchValues();
             return Objects.hash(y, params.getP(), params.getG());
         }
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (this == obj) return true;
             // equals() should never throw exceptions
             if (!token.isValid()) {

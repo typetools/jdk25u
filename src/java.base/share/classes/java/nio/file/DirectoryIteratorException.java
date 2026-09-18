@@ -25,6 +25,10 @@
 
 package java.nio.file;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.util.ConcurrentModificationException;
 import java.util.Objects;
 import java.io.IOException;
@@ -40,6 +44,7 @@ import java.io.InvalidObjectException;
  * @see DirectoryStream
  */
 
+@AnnotatedFor({"nullness"})
 public final class DirectoryIteratorException
     extends ConcurrentModificationException
 {
@@ -56,6 +61,7 @@ public final class DirectoryIteratorException
      * @throws  NullPointerException
      *          if the cause is {@code null}
      */
+    @SideEffectFree
     public DirectoryIteratorException(IOException cause) {
         super(Objects.requireNonNull(cause));
     }

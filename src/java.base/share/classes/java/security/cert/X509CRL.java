@@ -25,6 +25,12 @@
 
 package java.security.cert;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import sun.security.util.SignatureUtil;
 import sun.security.x509.X509CRLImpl;
 
@@ -130,8 +136,10 @@ public abstract non-sealed class X509CRL extends CRL implements X509Extension, D
      * @return true iff the encoded forms of the two CRLs
      * match, false otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (this == other) {
             return true;
         }

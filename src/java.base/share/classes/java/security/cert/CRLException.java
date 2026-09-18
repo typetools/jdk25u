@@ -25,6 +25,9 @@
 
 package java.security.cert;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.security.GeneralSecurityException;
 
 /**
@@ -43,6 +46,7 @@ public class CRLException extends GeneralSecurityException {
      * detail message is a String that describes this particular
      * exception.
      */
+    @SideEffectFree
     public CRLException() {
         super();
     }
@@ -54,7 +58,8 @@ public class CRLException extends GeneralSecurityException {
      *
      * @param message the detail message.
      */
-    public CRLException(String message) {
+    @SideEffectFree
+    public CRLException(@Nullable String message) {
         super(message);
     }
 
@@ -69,7 +74,8 @@ public class CRLException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public CRLException(String message, Throwable cause) {
+    @SideEffectFree
+    public CRLException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -84,7 +90,8 @@ public class CRLException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public CRLException(Throwable cause) {
+    @SideEffectFree
+    public CRLException(@Nullable Throwable cause) {
         super(cause);
     }
 }

@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This exception is thrown if an entry in the keystore cannot be recovered.
  *
@@ -40,6 +43,7 @@ public class UnrecoverableEntryException extends GeneralSecurityException {
     /**
      * Constructs an {@code UnrecoverableEntryException} with no detail message.
      */
+    @SideEffectFree
     public UnrecoverableEntryException() {
         super();
     }
@@ -51,7 +55,8 @@ public class UnrecoverableEntryException extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-   public UnrecoverableEntryException(String msg) {
+    @SideEffectFree
+   public UnrecoverableEntryException(@Nullable String msg) {
        super(msg);
     }
 }

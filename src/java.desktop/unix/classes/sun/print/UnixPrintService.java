@@ -25,6 +25,12 @@
 
 package sun.print;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -1035,8 +1041,10 @@ public final class UnixPrintService implements PrintService, AttributeUpdater,
         return "Unix Printer : " + getName();
     }
 
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return  (obj == this ||
                  (obj instanceof UnixPrintService &&
                   ((UnixPrintService)obj).getName().equals(getName())));

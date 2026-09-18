@@ -24,6 +24,8 @@
  */
 package sun.security.ssl;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.MessageFormat;
@@ -107,6 +109,7 @@ final class PskKeyExchangeModesExtension {
             this.modes = Record.getBytes8(m);
         }
 
+        @Pure
         boolean contains(PskKeyExchangeMode mode) {
             if (modes != null) {
                 for (byte m : modes) {

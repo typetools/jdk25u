@@ -25,6 +25,9 @@
 
 package java.lang.annotation;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown when the annotation parser attempts to read an annotation
  * from a class file and determines that the annotation is malformed.
@@ -46,7 +49,8 @@ public class AnnotationFormatError extends Error {
      *
      * @param   message   the detail message.
      */
-    public AnnotationFormatError(String message) {
+    @SideEffectFree
+    public AnnotationFormatError(@Nullable String message) {
         super(message);
     }
 
@@ -60,7 +64,8 @@ public class AnnotationFormatError extends Error {
      * @param  cause the cause (A {@code null} value is permitted, and
      *     indicates that the cause is nonexistent or unknown.)
      */
-    public AnnotationFormatError(String message, Throwable cause) {
+    @SideEffectFree
+    public AnnotationFormatError(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -74,7 +79,8 @@ public class AnnotationFormatError extends Error {
      * @param  cause the cause (A {@code null} value is permitted, and
      *     indicates that the cause is nonexistent or unknown.)
      */
-    public AnnotationFormatError(Throwable cause) {
+    @SideEffectFree
+    public AnnotationFormatError(@Nullable Throwable cause) {
         super(cause);
     }
 }

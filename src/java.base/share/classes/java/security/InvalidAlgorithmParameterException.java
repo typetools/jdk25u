@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This is the exception for invalid or inappropriate algorithm parameters.
  *
@@ -49,6 +52,7 @@ extends GeneralSecurityException {
      * A detail message is a {@code String} that describes this particular
      * exception.
      */
+    @SideEffectFree
     public InvalidAlgorithmParameterException() {
         super();
     }
@@ -61,7 +65,8 @@ extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-    public InvalidAlgorithmParameterException(String msg) {
+    @SideEffectFree
+    public InvalidAlgorithmParameterException(@Nullable String msg) {
         super(msg);
     }
 
@@ -76,7 +81,8 @@ extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public InvalidAlgorithmParameterException(String message, Throwable cause) {
+    @SideEffectFree
+    public InvalidAlgorithmParameterException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -92,7 +98,8 @@ extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public InvalidAlgorithmParameterException(Throwable cause) {
+    @SideEffectFree
+    public InvalidAlgorithmParameterException(@Nullable Throwable cause) {
         super(cause);
     }
 }

@@ -26,6 +26,11 @@
 
 package java.util;
 
+import org.checkerframework.checker.index.qual.IndexOrHigh;
+import org.checkerframework.checker.interning.qual.UsesObjectEquals;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * This is a near duplicate of {@link TimSort}, modified for use with
  * arrays of objects that implement {@link Comparable}, instead of using
@@ -39,6 +44,8 @@ package java.util;
  *
  * @author Josh Bloch
  */
+@AnnotatedFor({"index", "interning"})
+@UsesObjectEquals
 class ComparableTimSort {
     /**
      * This is the minimum sized sequence that will be merged.  Shorter
@@ -176,7 +183,8 @@ class ComparableTimSort {
      * @param workLen usable size of work array
      * @since 1.8
      */
-    static void sort(Object[] a, int lo, int hi, Object[] work, int workBase, int workLen) {
+    @SideEffectsOnly("#1")
+    static void sort(Object[] a, @IndexOrHigh({"#1"}) int lo, @IndexOrHigh({"#1"}) int hi, Object[] work, int workBase, int workLen) {
         assert a != null && lo >= 0 && lo <= hi && hi <= a.length;
 
         int nRemaining  = hi - lo;

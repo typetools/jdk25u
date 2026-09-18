@@ -25,6 +25,8 @@
 
 package java.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Error thrown when something goes wrong while locating, loading, or
@@ -48,7 +50,8 @@ public class ServiceConfigurationError
      * @param  msg  The message, or {@code null} if there is no message
      *
      */
-    public ServiceConfigurationError(String msg) {
+    @SideEffectFree
+    public ServiceConfigurationError(@Nullable String msg) {
         super(msg);
     }
 
@@ -60,7 +63,8 @@ public class ServiceConfigurationError
      * @param  cause  The cause, or {@code null} if the cause is nonexistent
      *                or unknown
      */
-    public ServiceConfigurationError(String msg, Throwable cause) {
+    @SideEffectFree
+    public ServiceConfigurationError(@Nullable String msg, @Nullable Throwable cause) {
         super(msg, cause);
     }
 

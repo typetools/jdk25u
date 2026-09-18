@@ -25,6 +25,9 @@
 
 package jdk.javadoc.internal.doclets.toolkit.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -146,6 +149,7 @@ public class Extern {
      * @param element an Element.
      * @return true if the element is externally documented
      */
+    @Pure
     public boolean isExternal(Element element) {
         if (packageItems.isEmpty()) {
             return false;
@@ -164,6 +168,7 @@ public class Extern {
      * @param elementName name of the element.
      * @return true if the element is a module
      */
+    @Pure
     public boolean isModule(String elementName) {
         Item elem = moduleItems.get(elementName);
         return elem != null;
@@ -397,7 +402,7 @@ public class Extern {
     private static class Fault extends Exception {
         private static final long serialVersionUID = 0;
 
-        Fault(String msg, Exception cause) {
+        Fault(String msg, @Nullable Exception cause) {
             super(msg + (cause == null ? "" : " (" + cause + ")"), cause);
         }
     }
@@ -595,6 +600,7 @@ public class Extern {
         return moduleName == null ? DocletConstants.DEFAULT_ELEMENT_NAME : moduleName;
     }
 
+    @Pure
     public boolean isUrl (String urlCandidate) {
         try {
             @SuppressWarnings("deprecation")

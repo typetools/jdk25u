@@ -25,6 +25,12 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import javax.security.auth.Subject;
 
 /**
@@ -50,8 +56,10 @@ public interface Principal {
      * @return {@code true} if the {@code Principal} passed in is the same as
      * that encapsulated by this {@code Principal}, and {@code false} otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    boolean equals(Object another);
+    boolean equals(@Nullable Object another);
 
     /**
      * Returns a string representation of this {@code Principal}.

@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that an error occurred while attempting to bind a
  * socket to a local address and port.  Typically, the port is
@@ -44,12 +47,14 @@ public class BindException extends SocketException {
      * description of this error.
      * @param msg the detail message
      */
-    public BindException(String msg) {
+    @SideEffectFree
+    public BindException(@Nullable String msg) {
         super(msg);
     }
 
     /**
      * Construct a new BindException with no detailed message.
      */
+    @SideEffectFree
     public BindException() {}
 }

@@ -25,6 +25,8 @@
 
 package javax.security.sasl;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.io.IOException;
 
 /**
@@ -59,7 +61,7 @@ public class SaslException extends IOException {
      *
      * @see java.lang.Throwable#getMessage
      */
-    public SaslException (String detail) {
+    public SaslException (@Nullable String detail) {
         super(detail);
     }
 
@@ -79,7 +81,7 @@ public class SaslException extends IOException {
      * @see java.lang.Throwable#getMessage
      * @see #getCause
      */
-    public SaslException (String detail, Throwable ex) {
+    public SaslException (@Nullable String detail, @Nullable Throwable ex) {
         super(detail);
         if (ex != null) {
             initCause(ex);
@@ -90,7 +92,7 @@ public class SaslException extends IOException {
      * Override Throwable.getCause() to ensure deserialized object from
      * JSR 28 would return same value for getCause() (i.e., _exception).
      */
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return _exception;
     }
 

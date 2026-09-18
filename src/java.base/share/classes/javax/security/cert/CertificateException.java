@@ -26,6 +26,9 @@
 
 package javax.security.cert;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This exception indicates one of a variety of certificate problems.
  *
@@ -49,6 +52,7 @@ public class CertificateException extends Exception {
      * Constructs a certificate exception with no detail message. A detail
      * message is a String that describes this particular exception.
      */
+    @SideEffectFree
     public CertificateException() {
         super();
     }
@@ -60,7 +64,8 @@ public class CertificateException extends Exception {
      *
      * @param msg the detail message.
      */
-    public CertificateException(String msg) {
+    @SideEffectFree
+    public CertificateException(@Nullable String msg) {
         super(msg);
     }
 }

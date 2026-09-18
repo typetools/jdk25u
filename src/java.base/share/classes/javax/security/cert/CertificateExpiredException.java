@@ -26,6 +26,9 @@
 
 package javax.security.cert;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Certificate Expired Exception. This is thrown whenever the current
  * {@code Date} or the specified {@code Date} is after the
@@ -53,6 +56,7 @@ public class CertificateExpiredException extends CertificateException {
      * detail message is a String that describes this particular
      * exception.
      */
+    @SideEffectFree
     public CertificateExpiredException() {
         super();
     }
@@ -64,7 +68,8 @@ public class CertificateExpiredException extends CertificateException {
      *
      * @param message the detail message.
      */
-    public CertificateExpiredException(String message) {
+    @SideEffectFree
+    public CertificateExpiredException(@Nullable String message) {
         super(message);
     }
 }

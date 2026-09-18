@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.IOException;
 
 /**
@@ -43,6 +46,7 @@ public class UnknownServiceException extends IOException {
      * Constructs a new {@code UnknownServiceException} with no
      * detail message.
      */
+    @SideEffectFree
     public UnknownServiceException() {
     }
 
@@ -52,7 +56,8 @@ public class UnknownServiceException extends IOException {
      *
      * @param   msg   the detail message.
      */
-    public UnknownServiceException(String msg) {
+    @SideEffectFree
+    public UnknownServiceException(@Nullable String msg) {
         super(msg);
     }
 }

@@ -25,6 +25,9 @@
 
 package java.util.jar;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that an error of some sort has occurred while reading from
  * or writing to a JAR file.
@@ -39,6 +42,7 @@ public class JarException extends java.util.zip.ZipException {
     /**
      * Constructs a JarException with no detail message.
      */
+    @SideEffectFree
     public JarException() {
     }
 
@@ -46,7 +50,8 @@ public class JarException extends java.util.zip.ZipException {
      * Constructs a JarException with the specified detail message.
      * @param s the detail message
      */
-    public JarException(String s) {
+    @SideEffectFree
+    public JarException(@Nullable String s) {
         super(s);
     }
 }

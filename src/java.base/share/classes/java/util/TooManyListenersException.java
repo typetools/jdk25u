@@ -25,6 +25,9 @@
 
 package java.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * <p>
  * The {@code  TooManyListenersException } Exception is used as part of
@@ -56,6 +59,7 @@ public class TooManyListenersException extends Exception {
      * A detail message is a String that describes this particular exception.
      */
 
+    @SideEffectFree
     public TooManyListenersException() {
         super();
     }
@@ -66,7 +70,8 @@ public class TooManyListenersException extends Exception {
      * @param s the detail message
      */
 
-    public TooManyListenersException(String s) {
+    @SideEffectFree
+    public TooManyListenersException(@Nullable String s) {
         super(s);
     }
 }

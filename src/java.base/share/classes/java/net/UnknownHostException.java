@@ -25,6 +25,10 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.io.IOException;
 
 /**
@@ -43,7 +47,8 @@ public class UnknownHostException extends IOException {
      *
      * @param   message   the detail message.
      */
-    public UnknownHostException(String message) {
+    @SideEffectFree
+    public UnknownHostException(@Nullable String message) {
         super(message);
     }
 
@@ -51,6 +56,7 @@ public class UnknownHostException extends IOException {
      * Constructs a new {@code UnknownHostException} with no detail
      * message.
      */
+    @SideEffectFree
     public UnknownHostException() {
     }
 }

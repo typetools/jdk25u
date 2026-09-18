@@ -25,6 +25,12 @@
 
 package javax.security.auth.kerberos;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.Serial;
 import java.util.Arrays;
 import java.util.Objects;
@@ -299,8 +305,10 @@ public class KerberosKey implements SecretKey {
      * false otherwise.
      * @since 1.6
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
 
         if (other == this) {
             return true;

@@ -25,6 +25,8 @@
 
 package java.lang.reflect;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 /**
  * Thrown when a syntactically malformed signature attribute is
@@ -41,6 +43,7 @@ public class GenericSignatureFormatError extends ClassFormatError {
      * Constructs a new {@code GenericSignatureFormatError}.
      *
      */
+    @SideEffectFree
     public GenericSignatureFormatError() {
         super();
     }
@@ -51,7 +54,8 @@ public class GenericSignatureFormatError extends ClassFormatError {
      *
      * @param message the detail message, may be {@code null}
      */
-    public GenericSignatureFormatError(String message) {
+    @SideEffectFree
+    public GenericSignatureFormatError(@Nullable String message) {
         super(message);
     }
 }

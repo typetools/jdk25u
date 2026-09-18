@@ -38,6 +38,12 @@
 
 package java.text;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * The {@code RuleBasedCollator} class is a concrete subclass of
  * {@code Collator} that provides a simple, data-driven, table
@@ -731,8 +737,10 @@ public class RuleBasedCollator extends Collator{
      * @return true if the current table-based collation object is the same
      * as the table-based collation object obj; false otherwise.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (!super.equals(obj)) return false;  // super does null and class checks
         RuleBasedCollator other = (RuleBasedCollator) obj;
         // all other non-transient information is also contained in rules.

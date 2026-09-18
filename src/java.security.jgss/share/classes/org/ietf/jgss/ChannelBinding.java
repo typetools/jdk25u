@@ -25,6 +25,12 @@
 
 package org.ietf.jgss;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.net.InetAddress;
 import java.util.Arrays;
 
@@ -167,8 +173,10 @@ public class ChannelBinding {
      * the same values for the initiator and acceptor addresses and the
      * application data.
      */
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
 
         if (this == obj)
             return true;

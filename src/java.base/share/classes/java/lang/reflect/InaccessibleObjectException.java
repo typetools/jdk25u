@@ -25,6 +25,9 @@
 
 package java.lang.reflect;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Thrown when Java language access checks cannot be suppressed.
  *
@@ -39,6 +42,7 @@ public class InaccessibleObjectException extends RuntimeException {
     /**
      * Constructs an {@code InaccessibleObjectException} with no detail message.
      */
+    @SideEffectFree
     public InaccessibleObjectException() {
     }
 
@@ -49,7 +53,8 @@ public class InaccessibleObjectException extends RuntimeException {
      * @param msg
      *        The detail message
      */
-    public InaccessibleObjectException(String msg) {
+    @SideEffectFree
+    public InaccessibleObjectException(@Nullable String msg) {
         super(msg);
     }
 

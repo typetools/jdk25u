@@ -25,6 +25,9 @@
 
 package java.net;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Signals that an ICMP Port Unreachable message has been
  * received on a connected datagram.
@@ -41,7 +44,8 @@ public class PortUnreachableException extends SocketException {
      * detail message.
      * @param msg the detail message
      */
-    public PortUnreachableException(String msg) {
+    @SideEffectFree
+    public PortUnreachableException(@Nullable String msg) {
         super(msg);
     }
 
@@ -49,5 +53,6 @@ public class PortUnreachableException extends SocketException {
      * Construct a new {@code PortUnreachableException} with no
      * detailed message.
      */
+    @SideEffectFree
     public PortUnreachableException() {}
 }

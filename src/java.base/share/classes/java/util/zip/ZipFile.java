@@ -25,6 +25,22 @@
 
 package java.util.zip;
 
+import org.checkerframework.checker.index.qual.GTENegativeOne;
+import org.checkerframework.checker.index.qual.IndexOrHigh;
+import org.checkerframework.checker.index.qual.LTEqLengthOf;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.interning.qual.UsesObjectEquals;
+import org.checkerframework.checker.mustcall.qual.MustCallAlias;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signedness.qual.SignedPositive;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.CFComment;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.IOException;
@@ -78,7 +94,8 @@ import static java.util.zip.ZipUtils.*;
  * @author      David Connelly
  * @since 1.1
  */
-public class ZipFile implements ZipConstants, Closeable {
+@AnnotatedFor({"index", "interning", "nullness"})
+public @UsesObjectEquals class ZipFile implements ZipConstants, Closeable {
 
     private final String filePath;     // ZIP file path
     private final String fileName;     // name of the file
@@ -99,7 +116,7 @@ public class ZipFile implements ZipConstants, Closeable {
     /**
      * Mode flag to open a ZIP file for reading.
      */
-    public static final int OPEN_READ = 0x1;
+    public static final @SignedPositive int OPEN_READ = 0x1;
 
     /**
      * Mode flag to open a ZIP file and mark it for deletion.  The file will be
@@ -108,7 +125,7 @@ public class ZipFile implements ZipConstants, Closeable {
      * {@code ZipFile} object until either the close method is invoked or the
      * virtual machine exits.
      */
-    public static final int OPEN_DELETE = 0x4;
+    public static final @SignedPositive int OPEN_DELETE = 0x4;
 
     /**
      * Flag to specify whether the Extra ZIP64 validation should be
@@ -259,7 +276,7 @@ public class ZipFile implements ZipConstants, Closeable {
      *
      * @since 1.7
      */
-    public String getComment() {
+    public @Nullable String getComment() {
         synchronized (this) {
             ensureOpen();
             if (res.zsrc.comment == null) {
@@ -283,7 +300,7 @@ public class ZipFile implements ZipConstants, Closeable {
      * @return the ZIP file entry, or null if not found
      * @throws IllegalStateException if the ZIP file has been closed
      */
-    public ZipEntry getEntry(String name) {
+    public @Nullable ZipEntry getEntry(String name) {
         Objects.requireNonNull(name, "name");
         ZipEntry entry = null;
         synchronized (this) {
@@ -320,7 +337,11 @@ public class ZipFile implements ZipConstants, Closeable {
      * @throws IOException if an I/O error has occurred
      * @throws IllegalStateException if the ZIP file has been closed
      */
-    public InputStream getInputStream(ZipEntry entry) throws IOException {
+    @CFComment({"These @MustCallAlias annotations might not be right.  The",
+      "Javadoc documentation above is not clear.  It seems that closing the",
+      "ZipEntry does close the InputStream, but it is not clear that closing",
+      "the InputStream also closes the ZipEntry."})
+    public @Nullable @MustCallAlias InputStream getInputStream(@MustCallAlias ZipEntry entry) throws IOException {
         Objects.requireNonNull(entry, "entry");
         int pos;
         ZipFileInputStream in;
@@ -491,23 +512,31 @@ public class ZipFile implements ZipConstants, Closeable {
         }
 
         @Override
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
         public boolean hasMoreElements() {
             return hasNext();
         }
 
         @Override
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
         public boolean hasNext() {
             return i < entryCount;
         }
 
         @Override
-        public T nextElement() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public T nextElement(@NonEmpty ZipEntryIterator<T> this) {
             return next();
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public T next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public T next(@NonEmpty ZipEntryIterator<T> this) {
             synchronized (ZipFile.this) {
                 ensureOpen();
                 if (!hasNext()) {
@@ -678,7 +707,8 @@ public class ZipFile implements ZipConstants, Closeable {
      * @return the number of entries in the ZIP file
      * @throws IllegalStateException if the ZIP file has been closed
      */
-    public int size() {
+    @Pure
+    public @NonNegative int size() {
         synchronized (this) {
             ensureOpen();
             return res.zsrc.total;
@@ -920,7 +950,7 @@ public class ZipFile implements ZipConstants, Closeable {
             return pos;
         }
 
-        public int read(byte[] b, int off, int len) throws IOException {
+        public @GTENegativeOne @LTEqLengthOf({"#1"}) int read(byte[] b, @IndexOrHigh({"#1"}) int off, @IndexOrHigh({"#1"}) int len) throws IOException {
             synchronized (ZipFile.this) {
                 ensureOpenOrZipException();
                 initDataOffset();
@@ -984,6 +1014,7 @@ public class ZipFile implements ZipConstants, Closeable {
             return rem > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) rem;
         }
 
+        @Pure
         public long size() {
             return size;
         }
@@ -1047,7 +1078,7 @@ public class ZipFile implements ZipConstants, Closeable {
      * This method is used in JarFile, via SharedSecrets, as an optimization
      * when looking up the manifest file.
      */
-    private String getManifestName(boolean onlyIfSignatureRelatedFiles) {
+    private @Nullable String getManifestName(boolean onlyIfSignatureRelatedFiles) {
         synchronized (this) {
             ensureOpen();
             Source zsrc = res.zsrc;
@@ -1108,7 +1139,7 @@ public class ZipFile implements ZipConstants, Closeable {
                     return ((ZipFile)jar).getManifestNum();
                 }
                 @Override
-                public String getManifestName(JarFile jar, boolean onlyIfHasSignatureRelatedFiles) {
+                public @Nullable String getManifestName(JarFile jar, boolean onlyIfHasSignatureRelatedFiles) {
                     return ((ZipFile)jar).getManifestName(onlyIfHasSignatureRelatedFiles);
                 }
                 @Override
@@ -1450,6 +1481,7 @@ public class ZipFile implements ZipConstants, Closeable {
                 this.charset = charset;
             }
 
+            @Pure
             @Override
             public int hashCode() {
                 long t = charset.hashCode();
@@ -1459,8 +1491,9 @@ public class ZipFile implements ZipConstants, Closeable {
                         (fk != null ? fk.hashCode() : file.hashCode());
             }
 
+            @Pure
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 if (obj instanceof Key key) {
                     if (!charset.equals(key.charset)) {
                         return false;

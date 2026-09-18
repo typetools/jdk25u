@@ -25,6 +25,8 @@
 
 package jdk.javadoc.internal.html;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.regex.Matcher;
@@ -134,6 +136,7 @@ public class RawHtml extends Content {
         rawHtmlContent = rawHtml.toString();
     }
 
+    @Pure
     @Override
     public boolean isEmpty() {
         return rawHtmlContent.isEmpty();

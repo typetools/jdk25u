@@ -25,6 +25,8 @@
 
 package com.sun.org.apache.xerces.internal.impl;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLStreamException;
@@ -132,6 +134,7 @@ public class XMLStreamFilterImpl implements javax.xml.stream.XMLStreamReader {
      * @throws XMLStreamException
      * @return
      */
+    @Pure
     public boolean hasNext() throws XMLStreamException {
         if (fStreamReader.hasNext()) {
             if (!fEventAccepted) {

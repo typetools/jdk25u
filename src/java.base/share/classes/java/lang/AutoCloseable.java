@@ -25,6 +25,12 @@
 
 package java.lang;
 
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.CFComment;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 /**
  * An object that may hold resources (such as file or socket handles)
  * until it is closed. The {@link #close()} method of an {@code AutoCloseable}
@@ -48,6 +54,11 @@ package java.lang;
  * @author Josh Bloch
  * @since 1.7
  */
+@AnnotatedFor({"lock", "mustcall", "nullness"})
+@CFComment({"MustCall:  Do not write @InheritableMustCall(close) because doing so requires",
+  "writing @InheritableMustCall({}) on Stream, and that leads to a `annotations.on.use` error at",
+  "every type use like `@MustCall(close) Stream.  Instead, write `@MustCall(close)` on every",
+  "appropriate class that implements AutoCloseable (which includes a few, but not most, Streams)."})
 public interface AutoCloseable {
     /**
      * Closes this resource, relinquishing any underlying resources.
@@ -95,5 +106,6 @@ public interface AutoCloseable {
      *
      * @throws Exception if this resource cannot be closed
      */
-    void close() throws Exception;
+    @DoesNotUnrefineReceiver("resourceleak")
+    void close(@GuardSatisfied AutoCloseable this) throws Exception;
 }

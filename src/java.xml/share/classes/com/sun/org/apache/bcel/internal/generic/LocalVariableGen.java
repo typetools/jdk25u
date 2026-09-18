@@ -20,6 +20,9 @@
  */
 package com.sun.org.apache.bcel.internal.generic;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import com.sun.org.apache.bcel.internal.Const;
 import com.sun.org.apache.bcel.internal.classfile.LocalVariable;
 
@@ -109,7 +112,8 @@ public class LocalVariableGen implements InstructionTargeter, NamedAndTyped, Clo
      * We consider to local variables to be equal, if the use the same index and are valid in the same range.
      */
     @Override
-    public boolean equals(final Object o) {
+    @Pure
+    public boolean equals(final @Nullable Object o) {
         if (!(o instanceof LocalVariableGen)) {
             return false;
         }

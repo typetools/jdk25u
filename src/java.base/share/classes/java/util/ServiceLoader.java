@@ -25,6 +25,17 @@
 
 package java.util;
 
+import org.checkerframework.checker.interning.qual.UsesObjectEquals;
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -374,7 +385,8 @@ import jdk.internal.reflect.Reflection;
  * @since 1.6
  */
 
-public final class ServiceLoader<S>
+@AnnotatedFor({"interning", "lock", "nullness"})
+public final @UsesObjectEquals class ServiceLoader<S>
     implements Iterable<S>
 {
     // The class or interface representing the service being loaded
@@ -580,7 +592,7 @@ public final class ServiceLoader<S>
      *         provider method or there is more than one public static
      *         provider method
      */
-    private Method findStaticProviderMethod(Class<?> clazz) {
+    private @Nullable Method findStaticProviderMethod(Class<?> clazz) {
         List<Method> methods = null;
         try {
             methods = LANG_ACCESS.getDeclaredPublicMethods(clazz, "provider");
@@ -665,6 +677,7 @@ public final class ServiceLoader<S>
         }
 
         @Override
+        @Pure
         public S get() {
             if (factoryMethod != null) {
                 return invokeFactoryMethod();
@@ -720,12 +733,14 @@ public final class ServiceLoader<S>
         // when running with a security manager.
 
         @Override
+        @Pure
         public int hashCode() {
             return Objects.hash(service, type);
         }
 
         @Override
-        public boolean equals(Object ob) {
+        @Pure
+        public boolean equals(@Nullable Object ob) {
             return ob instanceof ProviderImpl<?> that
                     && this.service == that.service
                     && this.type == that.type;
@@ -742,7 +757,7 @@ public final class ServiceLoader<S>
      *         isn't the expected sub-type (or doesn't define a provider
      *         factory method that returns the expected type)
      */
-    private Provider<S> loadProvider(ServiceProvider provider) {
+    private @Nullable Provider<S> loadProvider(ServiceProvider provider) {
         Module module = provider.module();
         if (!module.canRead(service.getModule())) {
             // module does not read the module with the service type
@@ -817,6 +832,8 @@ public final class ServiceLoader<S>
         }
 
         @Override
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
         public boolean hasNext() {
             while (nextProvider == null && nextError == null) {
                 // get next provider to load
@@ -850,7 +867,9 @@ public final class ServiceLoader<S>
         }
 
         @Override
-        public Provider<T> next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public Provider<T> next(@NonEmpty LayerLookupIterator<T> this) {
             if (!hasNext())
                 throw new NoSuchElementException();
 
@@ -936,6 +955,8 @@ public final class ServiceLoader<S>
         }
 
         @Override
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
         public boolean hasNext() {
             while (nextProvider == null && nextError == null) {
                 // get next provider to load
@@ -962,7 +983,7 @@ public final class ServiceLoader<S>
         }
 
         @Override
-        public Provider<T> next() {
+        public Provider<T> next(@NonEmpty ModuleServicesLookupIterator<T> this) {
             if (!hasNext())
                 throw new NoSuchElementException();
 
@@ -1056,7 +1077,7 @@ public final class ServiceLoader<S>
         /**
          * Loads and returns the next provider class.
          */
-        private Class<?> nextProviderClass() {
+        private @Nullable Class<?> nextProviderClass() {
             if (configs == null) {
                 try {
                     String fullName = PREFIX + service.getName();
@@ -1138,12 +1159,16 @@ public final class ServiceLoader<S>
         }
 
         @Override
+        @Pure
+        @EnsuresNonEmptyIf(result = true, expression = "this")
         public boolean hasNext() {
             return hasNextService();
         }
 
         @Override
-        public Provider<T> next() {
+        @SideEffectsOnly("this")
+        @DoesNotUnrefineReceiver("modifiability")
+        public Provider<T> next(@NonEmpty LazyClassPathLookupIterator<T> this) {
             return nextService();
         }
     }
@@ -1160,11 +1185,15 @@ public final class ServiceLoader<S>
             Iterator<Provider<S>> second = new LazyClassPathLookupIterator<>();
             return new Iterator<Provider<S>>() {
                 @Override
+                @Pure
+                @EnsuresNonEmptyIf(result = true, expression = "this")
                 public boolean hasNext() {
                     return (first.hasNext() || second.hasNext());
                 }
                 @Override
-                public Provider<S> next() {
+                @SideEffectsOnly("this")
+                @DoesNotUnrefineReceiver("modifiability")
+                public Provider<S> next(/*@NonEmpty Iterator<Provider<S>> this*/) {
                     if (first.hasNext()) {
                         return first.next();
                     } else if (second.hasNext()) {
@@ -1214,6 +1243,7 @@ public final class ServiceLoader<S>
      * @return  An iterator that lazily loads providers for this loader's
      *          service
      */
+    @SideEffectFree
     public Iterator<S> iterator() {
 
         // create lookup iterator if needed
@@ -1239,6 +1269,8 @@ public final class ServiceLoader<S>
             }
 
             @Override
+            @Pure
+            @EnsuresNonEmptyIf(result = true, expression = "this")
             public boolean hasNext() {
                 checkReloadCount();
                 if (index < instantiatedProviders.size())
@@ -1247,7 +1279,9 @@ public final class ServiceLoader<S>
             }
 
             @Override
-            public S next() {
+            @SideEffectsOnly("this")
+            @DoesNotUnrefineReceiver("modifiability")
+            public S next(/*@NonEmpty Iterator<S> this*/) {
                 checkReloadCount();
                 S next;
                 if (index < instantiatedProviders.size()) {
@@ -1329,7 +1363,7 @@ public final class ServiceLoader<S>
         }
 
         @Override
-        public Spliterator<Provider<T>> trySplit() {
+        public @Nullable Spliterator<Provider<T>> trySplit() {
             return null;
         }
 
@@ -1391,7 +1425,7 @@ public final class ServiceLoader<S>
      * @return A new service loader
      */
     static <S> ServiceLoader<S> load(Class<S> service,
-                                     ClassLoader loader,
+                                     @Nullable ClassLoader loader,
                                      Module callerModule)
     {
         return new ServiceLoader<>(callerModule, service, loader);
@@ -1500,7 +1534,7 @@ public final class ServiceLoader<S>
     @CallerSensitive
     @SuppressWarnings("doclint:reference") // cross-module links
     public static <S> ServiceLoader<S> load(Class<S> service,
-                                            ClassLoader loader)
+                                            @Nullable ClassLoader loader)
     {
         return new ServiceLoader<>(Reflection.getCallerClass(), service, loader);
     }
@@ -1692,7 +1726,8 @@ public final class ServiceLoader<S>
      *
      * @return  A descriptive string
      */
-    public String toString() {
+    @SideEffectFree
+    public String toString(@GuardSatisfied ServiceLoader<S> this) {
         return "java.util.ServiceLoader[" + service.getName() + "]";
     }
 

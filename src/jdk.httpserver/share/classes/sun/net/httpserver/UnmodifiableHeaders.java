@@ -25,6 +25,9 @@
 
 package sun.net.httpserver;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.util.*;
 import java.util.function.BiFunction;
 import com.sun.net.httpserver.*;
@@ -48,9 +51,11 @@ public class UnmodifiableHeaders extends Headers {
     @Override
     public boolean isEmpty() {return headers.isEmpty();}
 
+    @Pure
     @Override
     public boolean containsKey(Object key) { return headers.containsKey(key); }
 
+    @Pure
     @Override
     public boolean containsValue(Object value) { return headers.containsValue(value); }
 
@@ -115,7 +120,7 @@ public class UnmodifiableHeaders extends Headers {
     }
 
     @Override
-    public boolean equals(Object o) {return headers.equals(o);}
+    public boolean equals(@Nullable Object o) {return headers.equals(o);}
 
     @Override
     public int hashCode() {return headers.hashCode();}

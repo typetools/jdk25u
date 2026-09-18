@@ -26,6 +26,8 @@
 
 package javax.management.remote;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.io.IOException;
 
 /**
@@ -54,7 +56,7 @@ public class JMXProviderException extends IOException {
      *
      * @param message the detail message
      */
-    public JMXProviderException(String message) {
+    public JMXProviderException(@Nullable String message) {
         super(message);
     }
 
@@ -65,12 +67,12 @@ public class JMXProviderException extends IOException {
      * @param message the detail message
      * @param cause the nested exception
      */
-    public JMXProviderException(String message, Throwable cause) {
+    public JMXProviderException(@Nullable String message, @Nullable Throwable cause) {
         super(message);
         this.cause = cause;
     }
 
-    public Throwable getCause() {
+    public @Nullable Throwable getCause() {
         return cause;
     }
 
@@ -79,5 +81,5 @@ public class JMXProviderException extends IOException {
      *         This field may be null.
      * @see #getCause()
      **/
-    private Throwable cause = null;
+    private @Nullable Throwable cause = null;
 }

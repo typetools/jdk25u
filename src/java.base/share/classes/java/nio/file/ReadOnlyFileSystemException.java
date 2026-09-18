@@ -25,6 +25,9 @@
 
 package java.nio.file;
 
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 /**
  * Unchecked exception thrown when an attempt is made to update an object
  * associated with a {@link FileSystem#isReadOnly() read-only} {@code FileSystem}.
@@ -32,6 +35,7 @@ package java.nio.file;
  * @since 1.7
  */
 
+@AnnotatedFor({"nullness"})
 public class ReadOnlyFileSystemException
     extends UnsupportedOperationException
 {
@@ -41,6 +45,7 @@ public class ReadOnlyFileSystemException
     /**
      * Constructs an instance of this class.
      */
+    @SideEffectFree
     public ReadOnlyFileSystemException() {
     }
 }

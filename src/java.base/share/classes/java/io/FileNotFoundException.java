@@ -25,6 +25,9 @@
 
 package java.io;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
 
 /**
  * Signals that an attempt to open the file denoted by a specified pathname
@@ -39,6 +42,7 @@ package java.io;
  * @since   1.0
  */
 
+@AnnotatedFor({"nullness"})
 public class FileNotFoundException extends IOException {
     @java.io.Serial
     private static final long serialVersionUID = -897856973823710492L;
@@ -47,6 +51,7 @@ public class FileNotFoundException extends IOException {
      * Constructs a {@code FileNotFoundException} with
      * {@code null} as its error detail message.
      */
+    @SideEffectFree
     public FileNotFoundException() {
         super();
     }
@@ -60,7 +65,8 @@ public class FileNotFoundException extends IOException {
      *
      * @param   s   the detail message.
      */
-    public FileNotFoundException(String s) {
+    @SideEffectFree
+    public FileNotFoundException(@Nullable String s) {
         super(s);
     }
 
@@ -73,7 +79,8 @@ public class FileNotFoundException extends IOException {
      *
      * @since 1.2
      */
-    private FileNotFoundException(String path, String reason) {
+    @SideEffectFree
+    private FileNotFoundException(String path, @Nullable String reason) {
         super(path + ((reason == null)
                       ? ""
                       : " (" + reason + ")"));

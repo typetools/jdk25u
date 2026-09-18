@@ -25,6 +25,12 @@
 
 package java.lang.module;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -335,7 +341,7 @@ public final class ModuleDescriptor
          *          dependence that is equal to this module dependence
          */
         @Override
-        public boolean equals(Object ob) {
+        public boolean equals(@Nullable Object ob) {
             return (ob instanceof Requires that)
                     && name.equals(that.name) && mods.equals(that.mods)
                     && Objects.equals(compiledVersion, that.compiledVersion)
@@ -576,7 +582,7 @@ public final class ModuleDescriptor
          *          dependence that is equal to this module dependence
          */
         @Override
-        public boolean equals(Object ob) {
+        public boolean equals(@Nullable Object ob) {
             return (ob instanceof Exports other)
                     && Objects.equals(this.mods, other.mods)
                     && Objects.equals(this.source, other.source)
@@ -800,7 +806,7 @@ public final class ModuleDescriptor
          *          dependence that is equal to this module dependence
          */
         @Override
-        public boolean equals(Object ob) {
+        public boolean equals(@Nullable Object ob) {
            return (ob instanceof Opens other)
                    && Objects.equals(this.mods, other.mods)
                    && Objects.equals(this.source, other.source)
@@ -933,7 +939,7 @@ public final class ModuleDescriptor
          *          {@code Provides} that is equal to this {@code Provides}
          */
         @Override
-        public boolean equals(Object ob) {
+        public boolean equals(@Nullable Object ob) {
             return (ob instanceof Provides other)
                     && Objects.equals(this.service, other.service)
                     && Objects.equals(this.providers, other.providers);
@@ -1230,7 +1236,7 @@ public final class ModuleDescriptor
          *          reference that is equal to this module reference
          */
         @Override
-        public boolean equals(Object ob) {
+        public boolean equals(@Nullable Object ob) {
             if (!(ob instanceof Version))
                 return false;
             return compareTo((Version)ob) == 0;
@@ -2310,7 +2316,9 @@ public final class ModuleDescriptor
      *          descriptor that is equal to this module descriptor
      */
     @Override
-    public boolean equals(Object ob) {
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
+    public boolean equals(@Nullable Object ob) {
         if (ob == this)
             return true;
         return (ob instanceof ModuleDescriptor that)

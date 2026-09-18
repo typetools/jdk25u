@@ -25,6 +25,9 @@
 
 package javax.crypto;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.security.GeneralSecurityException;
 
 /**
@@ -46,6 +49,7 @@ public class ShortBufferException extends GeneralSecurityException {
      * message. A detail message is a {@code String}  that describes this
      * particular exception.
      */
+    @SideEffectFree
     public ShortBufferException() {
         super();
     }
@@ -56,7 +60,8 @@ public class ShortBufferException extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-    public ShortBufferException(String msg) {
+    @SideEffectFree
+    public ShortBufferException(@Nullable String msg) {
         super(msg);
     }
 }

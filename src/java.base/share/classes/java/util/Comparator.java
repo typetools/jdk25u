@@ -25,6 +25,14 @@
 
 package java.util;
 
+import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.framework.qual.AnnotatedFor;
+import org.checkerframework.framework.qual.CFComment;
+
 import java.io.Serializable;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -112,6 +120,9 @@ import java.util.Comparators;
  * @see java.io.Serializable
  * @since 1.2
  */
+@CFComment({"lock/nullness: Javadoc says: \"a comparator may optionally permit comparison of null",
+"arguments, while maintaining the requirements for an equivalence relation.\""})
+@AnnotatedFor({"lock", "nullness", "index"})
 @FunctionalInterface
 public interface Comparator<T> {
     /**
@@ -175,7 +186,8 @@ public interface Comparator<T> {
      * @see Object#equals(Object)
      * @see Object#hashCode()
      */
-    boolean equals(Object obj);
+    @Pure
+    boolean equals(@GuardSatisfied Comparator<T> this, @GuardSatisfied @Nullable Object obj);
 
     /**
      * Returns a comparator that imposes the reverse ordering of this
@@ -185,6 +197,7 @@ public interface Comparator<T> {
      *         comparator.
      * @since 1.8
      */
+    @SideEffectFree
     default Comparator<T> reversed() {
         return Collections.reverseOrder(this);
     }
@@ -357,7 +370,7 @@ public interface Comparator<T> {
      * @since 1.8
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<? super T>> Comparator<T> naturalOrder() {
+    public static <T extends Comparable<@NonNull ? super @NonNull T>> Comparator<T> naturalOrder() {
         return (Comparator<T>) Comparators.NaturalOrderComparator.INSTANCE;
     }
 
@@ -378,7 +391,7 @@ public interface Comparator<T> {
      *         {@code Comparator}.
      * @since 1.8
      */
-    public static <T> Comparator<T> nullsFirst(Comparator<? super T> comparator) {
+    public static <T> Comparator<@Nullable T> nullsFirst(@Nullable Comparator<? super T> comparator) {
         return new Comparators.NullComparator<>(true, comparator);
     }
 
@@ -399,7 +412,7 @@ public interface Comparator<T> {
      *         {@code Comparator}.
      * @since 1.8
      */
-    public static <T> Comparator<T> nullsLast(Comparator<? super T> comparator) {
+    public static <T> Comparator<@Nullable T> nullsLast(@Nullable Comparator<? super T> comparator) {
         return new Comparators.NullComparator<>(false, comparator);
     }
 

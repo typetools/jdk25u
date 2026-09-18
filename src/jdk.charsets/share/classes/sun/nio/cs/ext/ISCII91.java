@@ -29,6 +29,8 @@
 
 package sun.nio.cs.ext;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.nio.charset.Charset;
 import java.nio.CharBuffer;
 import java.nio.ByteBuffer;
@@ -52,6 +54,7 @@ public class ISCII91 extends Charset implements HistoricallyNamedCharset
         return "ISCII91";
     }
 
+    @Pure
     public boolean contains(Charset cs) {
         return ((cs.name().equals("US-ASCII"))
                 || (cs instanceof ISCII91));

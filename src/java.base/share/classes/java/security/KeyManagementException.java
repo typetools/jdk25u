@@ -25,6 +25,9 @@
 
 package java.security;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * This is the general key management exception for all operations
  * dealing with key management. Examples of subclasses of
@@ -54,6 +57,7 @@ public class KeyManagementException extends KeyException {
      * detail message is a {@code String} that describes this particular
      * exception.
      */
+    @SideEffectFree
     public KeyManagementException() {
         super();
     }
@@ -65,7 +69,8 @@ public class KeyManagementException extends KeyException {
      *
      * @param msg the detail message.
      */
-    public KeyManagementException(String msg) {
+    @SideEffectFree
+    public KeyManagementException(@Nullable String msg) {
         super(msg);
     }
 
@@ -80,7 +85,8 @@ public class KeyManagementException extends KeyException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public KeyManagementException(String message, Throwable cause) {
+    @SideEffectFree
+    public KeyManagementException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -95,7 +101,8 @@ public class KeyManagementException extends KeyException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public KeyManagementException(Throwable cause) {
+    @SideEffectFree
+    public KeyManagementException(@Nullable Throwable cause) {
         super(cause);
     }
 }

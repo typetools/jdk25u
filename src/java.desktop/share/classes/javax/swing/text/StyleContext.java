@@ -25,6 +25,10 @@
 
 package javax.swing.text;
 
+import org.checkerframework.checker.interning.qual.Interned;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.AnnotatedFor;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -78,6 +82,7 @@ import sun.font.FontUtilities;
  *
  * @author  Timothy Prinzing
  */
+@AnnotatedFor({"interning"})
 @SuppressWarnings("serial") // Same-version serialization only
 public class StyleContext implements Serializable, AbstractDocument.AttributeContext {
 
@@ -769,7 +774,7 @@ public class StyleContext implements Serializable, AbstractDocument.AttributeCon
      * The name given to the default logical style attached
      * to paragraphs.
      */
-    public static final String DEFAULT_STYLE = "default";
+    public static final @Interned String DEFAULT_STYLE = "default";
 
     private static Hashtable<Object, String> freezeKeyMap;
     private static Hashtable<String, Object> thawKeyMap;
@@ -890,7 +895,7 @@ public class StyleContext implements Serializable, AbstractDocument.AttributeCon
          * @return    <code>true</code> if the objects are equal;
          *            <code>false</code> otherwise.
          */
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof AttributeSet) {
                 AttributeSet attrs = (AttributeSet) obj;
                 return ((getAttributeCount() == attrs.getAttributeCount()) &&
@@ -1122,7 +1127,7 @@ public class StyleContext implements Serializable, AbstractDocument.AttributeCon
          * @return    <code>true</code> if the objects are equal;
          *            <code>false</code> otherwise.
          */
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof FontKey) {
                 FontKey font = (FontKey)obj;
                 return (size == font.size) && (style == font.style) && (family == font.family);

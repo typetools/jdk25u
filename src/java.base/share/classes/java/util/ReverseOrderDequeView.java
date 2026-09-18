@@ -25,6 +25,13 @@
 
 package java.util;
 
+import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
@@ -41,6 +48,7 @@ class ReverseOrderDequeView<E> implements Deque<E> {
         base = deque;
     }
 
+    @SideEffectFree
     public static <T> Deque<T> of(Deque<T> deque) {
         if (deque instanceof ReverseOrderDequeView<T> rodv) {
             return rodv.base;
@@ -56,21 +64,28 @@ class ReverseOrderDequeView<E> implements Deque<E> {
             action.accept(e);
     }
 
+    @SideEffectFree
     public Iterator<E> iterator() {
         return base.descendingIterator();
     }
 
+    @SideEffectFree
     public Spliterator<E> spliterator() {
         return Spliterators.spliterator(this, Spliterator.ORDERED);
     }
 
     // ========== Collection ==========
 
+    @EnsuresNonEmpty("this")
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean add(E e) {
         base.addFirst(e);
         return true;
     }
 
+    @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public boolean addAll(Collection<? extends E> c) {
         boolean modified = false;
         for (E e : c) {
@@ -84,14 +99,17 @@ class ReverseOrderDequeView<E> implements Deque<E> {
         base.clear();
     }
 
+    @Pure
     public boolean contains(Object o) {
         return base.contains(o);
     }
 
+    @Pure
     public boolean containsAll(Collection<?> c) {
         return base.containsAll(c);
     }
 
+    @Pure
     public boolean isEmpty() {
         return base.isEmpty();
     }
@@ -149,6 +167,7 @@ class ReverseOrderDequeView<E> implements Deque<E> {
         return modified;
     }
 
+    @Pure
     public int size() {
         return base.size();
     }
@@ -157,6 +176,7 @@ class ReverseOrderDequeView<E> implements Deque<E> {
         return StreamSupport.stream(spliterator(), false);
     }
 
+    @SideEffectFree
     public Object[] toArray() {
         return ArraysSupport.reverse(base.toArray());
     }
@@ -169,6 +189,7 @@ class ReverseOrderDequeView<E> implements Deque<E> {
         return ArraysSupport.reverse(base.toArray(generator));
     }
 
+    @SideEffectFree
     // copied from AbstractCollection
     public String toString() {
         Iterator<E> it = iterator();
@@ -188,26 +209,34 @@ class ReverseOrderDequeView<E> implements Deque<E> {
 
     // ========== Deque and Queue ==========
 
+    @SideEffectsOnly("this")
     public void addFirst(E e) {
         base.addLast(e);
     }
 
+    @SideEffectsOnly("this")
     public void addLast(E e) {
         base.addFirst(e);
     }
 
+    @SideEffectFree
     public Iterator<E> descendingIterator() {
         return base.iterator();
     }
 
+    @Pure
     public E element() {
         return base.getLast();
     }
 
+    @EnsuresNonEmpty("this")
+    @Pure
     public E getFirst() {
         return base.getLast();
     }
 
+    @EnsuresNonEmpty("this")
+    @Pure
     public E getLast() {
         return base.getFirst();
     }
@@ -224,27 +253,30 @@ class ReverseOrderDequeView<E> implements Deque<E> {
         return base.offerFirst(e);
     }
 
-    public E peek() {
+    @Pure
+    public @Nullable E peek() {
         return base.peekLast();
     }
 
-    public E peekFirst() {
+    @Pure
+    public @Nullable E peekFirst() {
         return base.peekLast();
     }
 
-    public E peekLast() {
+    @Pure
+    public @Nullable E peekLast() {
         return base.peekFirst();
     }
 
-    public E poll() {
+    public @Nullable E poll() {
         return base.pollLast();
     }
 
-    public E pollFirst() {
+    public @Nullable E pollFirst() {
         return base.pollLast();
     }
 
-    public E pollLast() {
+    public @Nullable E pollLast() {
         return base.pollFirst();
     }
 

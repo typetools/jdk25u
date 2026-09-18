@@ -25,6 +25,12 @@
 
 package sun.awt.X11;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * XAtom is a class that allows you to create and modify X Window properties.
  * An X Atom is an identifier for a property that you can set on any X Window.
@@ -770,8 +776,10 @@ public final class XAtom {
         }
     }
 
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (!(o instanceof XAtom)) {
             return false;
         }

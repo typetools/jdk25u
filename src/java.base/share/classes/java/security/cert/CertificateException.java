@@ -25,6 +25,9 @@
 
 package java.security.cert;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.security.GeneralSecurityException;
 
 /**
@@ -43,6 +46,7 @@ public class CertificateException extends GeneralSecurityException {
      * Constructs a certificate exception with no detail message. A detail
      * message is a String that describes this particular exception.
      */
+    @SideEffectFree
     public CertificateException() {
         super();
     }
@@ -54,7 +58,8 @@ public class CertificateException extends GeneralSecurityException {
      *
      * @param msg the detail message.
      */
-    public CertificateException(String msg) {
+    @SideEffectFree
+    public CertificateException(@Nullable String msg) {
         super(msg);
     }
 
@@ -69,7 +74,8 @@ public class CertificateException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public CertificateException(String message, Throwable cause) {
+    @SideEffectFree
+    public CertificateException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -84,7 +90,8 @@ public class CertificateException extends GeneralSecurityException {
      *        and indicates that the cause is nonexistent or unknown.)
      * @since 1.5
      */
-    public CertificateException(Throwable cause) {
+    @SideEffectFree
+    public CertificateException(@Nullable Throwable cause) {
         super(cause);
     }
 }

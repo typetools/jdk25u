@@ -22,6 +22,8 @@
  */
 package com.sun.org.apache.xml.internal.security.keys.storage.implementations;
 
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
@@ -104,6 +106,7 @@ public class KeyStoreResolver extends StorageResolverSpi {
         }
 
         /** {@inheritDoc} */
+        @Pure
         @Override
         public boolean hasNext() {
             return this.i < this.certs.size();

@@ -25,6 +25,12 @@
 
 package sun.nio.ch;
 
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 
@@ -55,8 +61,10 @@ public class FileKey {
         return dwVolumeSerialNumber + nFileIndexHigh + nFileIndexLow;
     }
 
+    @Pure
+    @EnsuresNonNullIf(expression="#1", result=true)
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         return obj instanceof FileKey other
