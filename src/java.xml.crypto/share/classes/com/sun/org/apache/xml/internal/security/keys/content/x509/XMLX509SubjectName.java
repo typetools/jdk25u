@@ -88,6 +88,7 @@ public class XMLX509SubjectName extends SignatureElementProxy implements XMLX509
     /** {@inheritDoc} */
     @Pure
     @EnsuresNonNullIf(expression="#1", result=true)
+    @Override
     public boolean equals(@Nullable Object obj) {
         if (!(obj instanceof XMLX509SubjectName)) {
             return false;
@@ -100,6 +101,7 @@ public class XMLX509SubjectName extends SignatureElementProxy implements XMLX509
         return thisSubject.equals(otherSubject);
     }
 
+    @Override
     public int hashCode() {
         int result = 17;
         result = 31 * result + this.getSubjectName().hashCode();
@@ -107,6 +109,7 @@ public class XMLX509SubjectName extends SignatureElementProxy implements XMLX509
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getBaseLocalName() {
         return Constants._TAG_X509SUBJECTNAME;
     }

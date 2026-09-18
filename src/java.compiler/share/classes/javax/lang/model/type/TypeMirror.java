@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,6 +30,8 @@ import org.checkerframework.checker.signature.qual.FullyQualifiedName;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+
+import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.element.*;
 import javax.lang.model.util.Types;
 
@@ -65,7 +67,7 @@ import javax.lang.model.util.Types;
  * @jls 10.1 Array Types
  * @since 1.6
  */
-public interface TypeMirror extends javax.lang.model.AnnotatedConstruct {
+public interface TypeMirror extends AnnotatedConstruct {
 
     /**
      * {@return the {@code kind} of this type}
@@ -144,7 +146,7 @@ public interface TypeMirror extends javax.lang.model.AnnotatedConstruct {
     @FullyQualifiedName String toString();
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc AnnotatedConstruct}
      *
      * <p>Note that any annotations returned by this method are type
      * annotations.
@@ -155,7 +157,7 @@ public interface TypeMirror extends javax.lang.model.AnnotatedConstruct {
     List<? extends AnnotationMirror> getAnnotationMirrors();
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc AnnotatedConstruct}
      *
      * <p>Note that any annotation returned by this method is a type
      * annotation.
@@ -166,7 +168,7 @@ public interface TypeMirror extends javax.lang.model.AnnotatedConstruct {
     <A extends Annotation> A getAnnotation(Class<A> annotationType);
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc AnnotatedConstruct}
      *
      * <p>Note that any annotations returned by this method are type
      * annotations.

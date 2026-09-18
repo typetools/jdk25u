@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,7 +30,6 @@ import org.checkerframework.framework.qual.AnnotatedFor;
 
 import java.awt.*;
 import java.beans.*;
-import java.security.AccessController;
 import javax.accessibility.*;
 import javax.swing.plaf.RootPaneUI;
 import java.io.Serializable;
@@ -196,7 +195,6 @@ import sun.security.action.GetBooleanAction;
  * @author David Kloba
  * @since 1.2
  */
-/// PENDING(klobad) Who should be opaque in this component?
 @AnnotatedFor({"nullness"})
 @SuppressWarnings("serial")
 public class JRootPane extends JComponent implements Accessible {
@@ -207,19 +205,15 @@ public class JRootPane extends JComponent implements Accessible {
      * Whether or not we should dump the stack when true double buffering
      * is disabled. Default is false.
      */
-    @SuppressWarnings("removal")
     private static final boolean LOG_DISABLE_TRUE_DOUBLE_BUFFERING
-            = AccessController.doPrivileged(new GetBooleanAction(
-                                   "swing.logDoubleBufferingDisable"));
+            = Boolean.getBoolean("swing.logDoubleBufferingDisable");
 
     /**
      * Whether or not we should ignore requests to disable true double
      * buffering. Default is false.
      */
-    @SuppressWarnings("removal")
     private static final boolean IGNORE_DISABLE_TRUE_DOUBLE_BUFFERING
-            = AccessController.doPrivileged(new GetBooleanAction(
-                                   "swing.ignoreDoubleBufferingDisable"));
+           = Boolean.getBoolean("swing.ignoreDoubleBufferingDisable");
 
     /**
      * Constant used for the windowDecorationStyle property. Indicates that

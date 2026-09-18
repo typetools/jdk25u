@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -34,6 +34,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jdk.internal.constant.ConstantUtils;
+import jdk.internal.constant.MethodTypeDescImpl;
+
+import static java.util.Objects.requireNonNull;
+
 /**
  * A <a href="package-summary.html#nominal">nominal descriptor</a> for a
  * {@linkplain MethodType} constant.
@@ -67,7 +72,7 @@ public sealed interface MethodTypeDesc
      * @since 21
      */
     static MethodTypeDesc of(ClassDesc returnDesc) {
-        return MethodTypeDescImpl.ofTrusted(returnDesc, ConstantUtils.EMPTY_CLASSDESC);
+        return MethodTypeDescImpl.ofValidated(requireNonNull(returnDesc), ConstantUtils.EMPTY_CLASSDESC);
     }
 
     /**
@@ -122,7 +127,7 @@ public sealed interface MethodTypeDesc
      * @param index the index of the parameter to retrieve
      * @return a {@link ClassDesc} describing the desired parameter type
      * @throws IndexOutOfBoundsException if the index is outside the half-open
-     * range {[0, parameterCount())}
+     * range {@code [0, parameterCount())}
      */
     ClassDesc parameterType(int index);
 
@@ -159,7 +164,7 @@ public sealed interface MethodTypeDesc
      * @return a {@linkplain MethodTypeDesc} describing the desired method type
      * @throws NullPointerException if any argument is {@code null}
      * @throws IndexOutOfBoundsException if the index is outside the half-open
-     * range {[0, parameterCount)}
+     * range {@code [0, parameterCount)}
      */
     MethodTypeDesc changeParameterType(int index, ClassDesc paramType);
 
@@ -186,7 +191,7 @@ public sealed interface MethodTypeDesc
      * @return a {@linkplain MethodTypeDesc} describing the desired method type
      * @throws NullPointerException if any argument or its contents are {@code null}
      * @throws IndexOutOfBoundsException if {@code pos} is outside the closed
-     * range {[0, parameterCount]}
+     * range {@code [0, parameterCount]}
      * @throws IllegalArgumentException if any element of {@code paramTypes}
      * is a {@link ClassDesc} for {@code void}
      */
@@ -220,6 +225,8 @@ public sealed interface MethodTypeDesc
      * @apiNote {@linkplain MethodTypeDesc} can represent method type descriptors
      * that are not representable by {@linkplain MethodType}, such as methods with
      * more than 255 parameter slots, so attempts to resolve these may result in errors.
+     *
+     * @since 21
      */
     @Override
     MethodType resolveConstantDesc(MethodHandles.Lookup lookup) throws ReflectiveOperationException;

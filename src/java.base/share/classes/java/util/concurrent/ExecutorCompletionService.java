@@ -39,6 +39,8 @@ import org.checkerframework.checker.interning.qual.UsesObjectEquals;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.AnnotatedFor;
 
+import java.util.Objects;
+
 /**
  * A {@link CompletionService} that uses a supplied {@link Executor}
  * to execute tasks.  This class arranges that submitted tasks are,
@@ -150,8 +152,7 @@ public @UsesObjectEquals class ExecutorCompletionService<V> implements Completio
      * @throws NullPointerException if executor is {@code null}
      */
     public ExecutorCompletionService(Executor executor) {
-        if (executor == null)
-            throw new NullPointerException();
+        Objects.requireNonNull(executor, "executor");
         this.executor = executor;
         this.aes = (executor instanceof AbstractExecutorService) ?
             (AbstractExecutorService) executor : null;
@@ -173,8 +174,8 @@ public @UsesObjectEquals class ExecutorCompletionService<V> implements Completio
      */
     public ExecutorCompletionService(Executor executor,
                                      BlockingQueue<Future<V>> completionQueue) {
-        if (executor == null || completionQueue == null)
-            throw new NullPointerException();
+        Objects.requireNonNull(executor, "executor");
+        Objects.requireNonNull(completionQueue, "completionQueue");
         this.executor = executor;
         this.aes = (executor instanceof AbstractExecutorService) ?
             (AbstractExecutorService) executor : null;
@@ -186,7 +187,7 @@ public @UsesObjectEquals class ExecutorCompletionService<V> implements Completio
      * @throws NullPointerException       {@inheritDoc}
      */
     public Future<V> submit(Callable<V> task) {
-        if (task == null) throw new NullPointerException();
+        Objects.requireNonNull(task, "task");
         RunnableFuture<V> f = newTaskFor(task);
         executor.execute(new QueueingFuture<V>(f, completionQueue));
         return f;
@@ -197,7 +198,7 @@ public @UsesObjectEquals class ExecutorCompletionService<V> implements Completio
      * @throws NullPointerException       {@inheritDoc}
      */
     public Future<V> submit(Runnable task, V result) {
-        if (task == null) throw new NullPointerException();
+        Objects.requireNonNull(task, "task");
         RunnableFuture<V> f = newTaskFor(task, result);
         executor.execute(new QueueingFuture<V>(f, completionQueue));
         return f;

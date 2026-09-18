@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -179,6 +179,7 @@ public class OtherName implements GeneralNameInterface {
      */
     @Pure
     @EnsuresNonNullIf(expression="#1", result=true)
+    @Override
     public boolean equals(@Nullable Object other) {
         if (this == other) {
             return true;
@@ -211,16 +212,12 @@ public class OtherName implements GeneralNameInterface {
     }
 
     /**
-     * Returns the hash code for this OtherName.
-     *
-     * @return a hash code value.
+     * {@return the hash code for this OtherName}
      */
+    @Override
     public int hashCode() {
         if (myhash == -1) {
-            myhash = 37 + oid.hashCode();
-            for (int i = 0; i < nameValue.length; i++) {
-                myhash = 37 * myhash + nameValue[i];
-            }
+            myhash = oid.hashCode() + Arrays.hashCode(nameValue);
         }
         return myhash;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -366,13 +366,13 @@ public interface GSSCredential extends Cloneable{
      */
     @Pure
     @EnsuresNonNullIf(expression="#1", result=true)
+    @Override
     boolean equals(@Nullable Object another);
 
     /**
-     * Returns a hashcode value for this GSSCredential.
-     *
-     * @return a hashCode value
+     * {@return a hashcode value for this GSSCredential}
      */
+    @Override
     int hashCode();
 
 }

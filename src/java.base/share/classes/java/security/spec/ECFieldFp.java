@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -87,6 +87,7 @@ public class ECFieldFp implements ECField {
      */
     @Pure
     @EnsuresNonNullIf(expression="#1", result=true)
+    @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj)  return true;
 
@@ -95,9 +96,9 @@ public class ECFieldFp implements ECField {
     }
 
     /**
-     * Returns a hash code value for this prime finite field.
-     * @return a hash code value.
+     * {@return a hash code value for this prime finite field}
      */
+    @Override
     public int hashCode() {
         return p.hashCode();
     }

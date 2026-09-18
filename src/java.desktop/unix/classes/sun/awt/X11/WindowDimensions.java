@@ -32,7 +32,7 @@ import org.checkerframework.dataflow.qual.SideEffectFree;
 
 import java.awt.*;
 
-class WindowDimensions {
+final class WindowDimensions {
     private Point loc;
     private Dimension size;
     private Insets insets;
@@ -166,12 +166,14 @@ class WindowDimensions {
         return isClientSizeSet;
     }
 
+    @Override
     public String toString() {
         return "[" + loc + ", " + size + "(" +(isClientSizeSet?"client":"bounds") + ")+" + insets + "]";
     }
 
     @Pure
     @EnsuresNonNullIf(expression="#1", result=true)
+    @Override
     public boolean equals(@Nullable Object o) {
         if (!(o instanceof WindowDimensions)) {
             return false;
@@ -182,6 +184,7 @@ class WindowDimensions {
             && (getBounds().equals(dims.getBounds()));
     }
 
+    @Override
     public int hashCode() {
         return ((insets == null)? (0):(insets.hashCode())) ^ getClientRect().hashCode() ^ getBounds().hashCode();
     }

@@ -223,6 +223,7 @@ public class URIName implements GeneralNameInterface {
      */
     @Pure
     @EnsuresNonNullIf(expression="#1", result=true)
+    @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
@@ -283,10 +284,9 @@ public class URIName implements GeneralNameInterface {
     }
 
     /**
-     * Returns the hash code value for this object.
-     *
-     * @return a hash code value for this object.
+     * {@return the hash code value for this object}
      */
+    @Override
     public int hashCode() {
         return uri.hashCode();
     }
