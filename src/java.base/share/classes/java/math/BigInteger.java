@@ -4069,6 +4069,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      *         BigInteger whose value is numerically equal to this BigInteger.
      */
     @Pure
+    @Override
     @EnsuresNonNullIf(expression="#1", result=true)
     @Override
     public boolean equals(@Nullable Object x) {

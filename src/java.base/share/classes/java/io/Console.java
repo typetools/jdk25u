@@ -37,6 +37,8 @@ import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.framework.qual.AnnotatedFor;
 
 import java.lang.annotation.Native;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.nio.charset.Charset;
 import jdk.internal.access.JavaIOAccess;
@@ -239,6 +241,7 @@ public sealed @UsesObjectEquals class Console implements Flushable permits Proxy
      * @return  This console
      * @since   23
      */
+    @FormatMethod
     public Console format(Locale locale, String format, @Nullable Object ... args) {
         throw newUnsupportedOperationException();
     }

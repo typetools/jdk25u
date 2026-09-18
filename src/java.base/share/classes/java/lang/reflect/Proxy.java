@@ -383,7 +383,7 @@ public class Proxy implements java.io.Serializable {
      * @return  a Constructor of the proxy class taking single
      *          {@code InvocationHandler} parameter
      */
-    private static Constructor<?> getProxyConstructor(ClassLoader loader,
+    private static Constructor<?> getProxyConstructor(@Nullable ClassLoader loader,
                                                       Class<?>... interfaces)
     {
         // optimization for single interface

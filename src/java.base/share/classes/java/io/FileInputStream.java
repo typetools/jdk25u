@@ -139,8 +139,8 @@ public class FileInputStream extends InputStream
      *             reading.
      * @see        java.io.File#getPath()
      */
-    @SuppressWarnings("this-escape")
     @SideEffectFree
+    @SuppressWarnings("this-escape")
     public FileInputStream(File file) throws FileNotFoundException {
         if (file.isInvalid()) {
             throw new FileNotFoundException("Invalid file path");
